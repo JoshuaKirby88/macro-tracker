@@ -11,7 +11,7 @@
 # Do
 
 - [x] Hosting: Cloudflare
-- [ ] Auth: Clerk
+- [x] Auth: Clerk
 - [ ] DB: Convex
 - [ ] UI: ShadCN
 - [ ] Analytics: PostHog
