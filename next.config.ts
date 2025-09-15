@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+export default {} satisfies NextConfig
 
-export default nextConfig;
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare"
+
+initOpenNextCloudflareForDev({ experimental: { remoteBindings: true } })
