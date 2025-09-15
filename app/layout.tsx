@@ -2,7 +2,10 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
-import { Providers } from "./_components/layout/providers"
+import { Button } from "@/components/shadcn/button"
+import { ConvexProvider } from "./_components/layout/providers/convex-provider"
+import { ThemeProvider } from "./_components/layout/providers/theme-provider"
+import { ThemeDropdown } from "./_components/layout/theme-dropdown"
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -24,23 +27,28 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 		<ClerkProvider>
 			<html lang="en">
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-					<Providers>
-						<header className="flex justify-end items-center p-4 gap-4 h-16">
-							<SignedOut>
-								<SignInButton />
-								<SignUpButton>
-									<button type="button" className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-										Sign Up
-									</button>
-								</SignUpButton>
-							</SignedOut>
-							<SignedIn>
-								<UserButton />
-							</SignedIn>
-						</header>
+					<ThemeProvider>
+						<ConvexProvider>
+							<header className="flex justify-end items-center p-4 gap-4 h-16">
+								<ThemeDropdown />
 
-						{children}
-					</Providers>
+								<SignedOut>
+									<SignInButton>
+										<Button variant="outline">Sign In</Button>
+									</SignInButton>
+									<SignUpButton>
+										<Button>Sign Up</Button>
+									</SignUpButton>
+								</SignedOut>
+
+								<SignedIn>
+									<UserButton />
+								</SignedIn>
+							</header>
+
+							{children}
+						</ConvexProvider>
+					</ThemeProvider>
 				</body>
 			</html>
 		</ClerkProvider>

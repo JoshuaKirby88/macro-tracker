@@ -13,7 +13,7 @@
 - [x] Hosting: Cloudflare
 - [x] Auth: Clerk
 - [x] DB: Convex
-- [ ] UI: ShadCN
-- [ ] Analytics: PostHog
+- [x] UI: ShadCN
 - [ ] Voice recognition: gemini-2.5
 - [ ] Image recognition: gemini-2.5
+- [ ] Analytics: PostHog
