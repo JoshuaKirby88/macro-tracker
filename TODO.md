@@ -10,7 +10,7 @@
 
 # Do
 
-- [ ] Settings
+- [x] Settings
     - [x] Button in navbar
     - [ ] Set macro range goals
 - [x] Create new food
