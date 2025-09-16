@@ -1,4 +1,5 @@
 import { v } from "convex/values"
+import { dateFormatter } from "@/utils/date-formatter"
 import type { DataModel } from "./_generated/dataModel"
 import { mutation, query } from "./_generated/server"
 
@@ -32,25 +33,13 @@ export const create = mutation({
 	},
 })
 
-// Compute totals for a given calendar day (YYYY-MM-DD, treated as UTC day)
 export const totalsForDate = query({
 	args: { forDate: v.string() },
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) return null
 
-		// Convert YYYY-MM-DD to [start, end) in UTC milliseconds
-		// Using UTC ensures deterministic behavior regardless of server timezone.
-		const [yearStr, monthStr, dayStr] = args.forDate.split("-")
-		const year = Number(yearStr)
-		const month = Number(monthStr) - 1 // zero-based
-		const day = Number(dayStr)
-		if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
-			throw new Error("Invalid forDate; expected YYYY-MM-DD")
-		}
-
-		const startMs = Date.UTC(year, month, day)
-		const endMs = Date.UTC(year, month, day + 1)
+		const { startMs, endMs } = dateFormatter.dateStringToRange(args.forDate)
 
 		const entries = await ctx.db
 			.query("entry")
@@ -58,37 +47,25 @@ export const totalsForDate = query({
 			.collect()
 
 		if (entries.length === 0) {
-			return {
-				forDate: args.forDate,
-				totals: { calories: 0, protein: 0, fat: 0, carbs: 0, sugar: 0, fiber: 0 },
-			}
+			return { calories: 0, protein: 0, fat: 0, carbs: 0, sugar: 0, fiber: 0 }
 		}
 
-		// Load foods referenced by these entries.
-		const foodIdToFood: Record<string, any> = {}
-		for (const entry of entries) {
-			const id = entry.foodId
-			if (foodIdToFood[id.id]) continue
-			const food = await ctx.db.get(id)
-			if (food && food.userId === identity.subject) {
-				foodIdToFood[id.id] = food
-			}
-		}
+		const foods = await Promise.all(Array.from(new Set(entries.map((e) => e.foodId))).map((foodId) => ctx.db.get(foodId)))
 
 		const totals = { calories: 0, protein: 0, fat: 0, carbs: 0, sugar: 0, fiber: 0 }
+
 		for (const entry of entries) {
-			const food = foodIdToFood[entry.foodId.id]
+			const food = foods.find((f) => f?._id === entry.foodId)
 			if (!food) continue
-			const q = entry.quantity
-			totals.calories += (food.calories || 0) * q
-			totals.protein += (food.protein || 0) * q
-			totals.fat += (food.fat || 0) * q
-			totals.carbs += (food.carbs || 0) * q
-			totals.sugar += (food.sugar || 0) * q
-			totals.fiber += (food.fiber || 0) * q
+			totals.calories += food.calories * entry.quantity
+			totals.protein += food.protein * entry.quantity
+			totals.fat += food.fat * entry.quantity
+			totals.carbs += food.carbs * entry.quantity
+			totals.sugar += food.sugar * entry.quantity
+			totals.fiber += (food.fiber || 0) * entry.quantity
 		}
 
-		return { forDate: args.forDate, totals }
+		return totals
 	},
 })
 

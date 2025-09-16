@@ -34,7 +34,7 @@ export const FoodAdder: React.FC = () => {
 	const hasFoods = (foods?.length ?? 0) > 0
 
 	return (
-		<Card className="pointer-events-auto fixed bottom-[calc(env(safe-area-inset-bottom)+12px)] left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-screen-sm -translate-x-1/2 rounded-2xl border bg-background/90 shadow-lg backdrop-blur">
+		<Card className="pointer-events-auto fixed left-1/2 z-50 w-[calc(100%-1.5rem)] max-w-screen-sm -translate-x-1/2 rounded-2xl border bg-background/90 shadow-lg backdrop-blur">
 			<CardHeader className="hidden items-start justify-between gap-4 sm:flex">
 				<div>
 					<CardTitle>Add food</CardTitle>

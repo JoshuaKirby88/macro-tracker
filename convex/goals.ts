@@ -1,7 +1,6 @@
-import { query, mutation } from "./_generated/server"
 import { v } from "convex/values"
+import { mutation, query } from "./_generated/server"
 
-// Get the most recent goal effective on or before a given date (YYYY-MM-DD)
 export const getForDate = query({
 	args: { forDate: v.string() },
 	handler: async (ctx, args) => {
@@ -14,7 +13,7 @@ export const getForDate = query({
 			.order("desc")
 			.first()
 
-		return goal ?? null
+		return goal
 	},
 })
 

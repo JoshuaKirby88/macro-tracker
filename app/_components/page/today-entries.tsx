@@ -4,18 +4,12 @@ import { useQuery } from "convex/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
 import { capitalize } from "@/utils/capitalize"
-
-function formatLocalDate(date: Date): string {
-	const year = date.getFullYear()
-	const month = String(date.getMonth() + 1).padStart(2, "0")
-	const day = String(date.getDate()).padStart(2, "0")
-	return `${year}-${month}-${day}`
-}
+import { dateFormatter } from "@/utils/date-formatter"
 
 const MEAL_ORDER = ["breakfast", "lunch", "dinner", "snack", "other"] as const
 
 export const TodayEntries = () => {
-	const today = formatLocalDate(new Date())
+	const today = dateFormatter.getLocalDateString(new Date())
 	const result = useQuery(api.entries.listForDate, { forDate: today })
 
 	if (result === undefined) {

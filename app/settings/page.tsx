@@ -5,14 +5,7 @@ import * as React from "react"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
-
-// Utility to format today's date as YYYY-MM-DD in local time
-function formatLocalDate(date: Date): string {
-	const year = date.getFullYear()
-	const month = String(date.getMonth() + 1).padStart(2, "0")
-	const day = String(date.getDate()).padStart(2, "0")
-	return `${year}-${month}-${day}`
-}
+import { dateFormatter } from "@/utils/date-formatter"
 
 type GoalDefaults = {
 	calories: string
@@ -213,7 +206,7 @@ function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: Return
 }
 
 function SettingsContent() {
-	const today = React.useMemo(() => formatLocalDate(new Date()), [])
+	const today = dateFormatter.getLocalDateString(new Date())
 	const goal = useQuery(api.goals.getForDate, { forDate: today }) as
 		| {
 				_id: string
