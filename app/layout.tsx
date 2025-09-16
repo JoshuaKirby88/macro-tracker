@@ -4,6 +4,8 @@ import Image from "next/image"
 import Link from "next/link"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
+import { SFProRoundedSemibold } from "@/components/fonts/fonts"
+import { cn } from "@/utils/cn"
 import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
 import { ThemeProvider } from "./_components/layout/providers/theme-provider"
@@ -32,9 +34,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 					<ThemeProvider>
 						<ConvexProvider>
 							<header className="flex justify-between items-center p-4 h-16">
-								<Link href="/" aria-label="Home" className="inline-flex items-center gap-2">
-									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={28} height={28} priority />
-									<span className="text-base font-medium">Onigiri</span>
+								<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
+									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={34} height={34} priority />
+									<span className={cn("text-xl text-muted-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
 								</Link>
 
 								<div className="flex items-center gap-4">
