@@ -32,8 +32,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 					<ThemeProvider>
 						<ConvexProvider>
 							<header className="flex justify-between items-center p-4 h-16">
-								<Link href="/" aria-label="Home" className="inline-flex items-center">
+								<Link href="/" aria-label="Home" className="inline-flex items-center gap-2">
 									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={28} height={28} priority />
+									<span className="text-base font-medium">Onigiri</span>
 								</Link>
 
 								<div className="flex items-center gap-4">
