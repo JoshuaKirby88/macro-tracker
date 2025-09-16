@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ca
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shadcn/chart"
 import { api } from "@/convex/_generated/api"
 import { dateFormatter } from "@/utils/date-formatter"
+import { entryUtil } from "@/utils/entry-util"
 
 const chartConfig: ChartConfig = {
 	calories: { label: "Calories", color: "#6366f1" },
@@ -16,14 +17,20 @@ const chartConfig: ChartConfig = {
 
 export const MacroBarChart = () => {
 	const today = dateFormatter.getLocalDateString(new Date())
-	const totals = useQuery(api.entries.totalsForDate, { forDate: today })
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { forDate: today })
 	const goal = useQuery(api.goals.getForDate, { forDate: today })
 
+	if (!entriesWithFoods) {
+		return null
+	}
+
+	const totals = entryUtil.getTotals(entriesWithFoods)
+
 	const series = [
-		{ id: "calories", label: "Calories", consumed: Math.round(totals?.calories ?? 0), goal: goal?.calories ?? 0 },
-		{ id: "fat", label: "Fat (g)", consumed: Math.round(totals?.fat ?? 0), goal: goal?.fat ?? 0 },
-		{ id: "carbs", label: "Carbs (g)", consumed: Math.round(totals?.carbs ?? 0), goal: goal?.carbs ?? 0 },
-		{ id: "protein", label: "Protein (g)", consumed: Math.round(totals?.protein ?? 0), goal: goal?.protein ?? 0 },
+		{ id: "calories", label: "Calories", consumed: Math.round(totals.calories), goal: goal?.calories ?? 0 },
+		{ id: "fat", label: "Fat (g)", consumed: Math.round(totals.fat), goal: goal?.fat ?? 0 },
+		{ id: "carbs", label: "Carbs (g)", consumed: Math.round(totals.carbs), goal: goal?.carbs ?? 0 },
+		{ id: "protein", label: "Protein (g)", consumed: Math.round(totals.protein), goal: goal?.protein ?? 0 },
 	] as const
 
 	const data = series.map((m) => ({
