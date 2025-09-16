@@ -14,7 +14,7 @@ type GoalDefaults = {
 	carbs: string
 }
 
-function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: ReturnType<typeof useMutation<typeof api.goals.upsertForDate>> }) {
+function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: ReturnType<typeof useMutation<typeof api.goals.createOrUpdate>> }) {
 	const { defaults, today, upsert } = props as any
 	const [message, setMessage] = React.useState<string | null>(null)
 
@@ -205,36 +205,10 @@ function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: Return
 	)
 }
 
-function SettingsContent() {
+const Page = () => {
 	const today = dateFormatter.getLocalDateString(new Date())
-	const goal = useQuery(api.goals.getForDate, { forDate: today }) as
-		| {
-				_id: string
-				calories?: number
-				protein?: number
-				fat?: number
-				carbs?: number
-		  }
-		| null
-		| undefined
-	const upsert = useMutation(api.goals.upsertForDate)
-
-	if (goal === undefined) {
-		return (
-			<Card>
-				<CardHeader>
-					<CardTitle>Daily macro goals</CardTitle>
-					<CardDescription>Set goals effective for today ({today}) and all future days. Past days remain unchanged.</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="text-sm text-muted-foreground">Loading…</div>
-				</CardContent>
-				<CardFooter className="justify-end">
-					<Button disabled>Save goals</Button>
-				</CardFooter>
-			</Card>
-		)
-	}
+	const goal = useQuery(api.goals.forDate, { forDate: today })
+	const upsert = useMutation(api.goals.createOrUpdate)
 
 	const defaults: GoalDefaults = {
 		calories: goal?.calories != null ? String(goal.calories) : "",
@@ -243,11 +217,7 @@ function SettingsContent() {
 		carbs: goal?.carbs != null ? String(goal.carbs) : "",
 	}
 
-	return <GoalForm defaults={defaults} today={today} upsert={upsert as any} />
-}
-
-const Page: React.FC = () => {
-	return <SettingsContent />
+	return <GoalForm defaults={defaults} today={today} upsert={upsert} />
 }
 
 export default Page

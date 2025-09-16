@@ -1,5 +1,7 @@
 import type { Entry, Food } from "./convex-types"
 
+export type EntryMealType = (typeof entryUtil.mealTypes)[number]
+
 export const entryUtil = {
 	mealTypes: ["breakfast", "lunch", "dinner"] as const,
 	getTotals(input: { entries: Entry[]; foods: Food[] }) {

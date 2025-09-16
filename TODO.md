@@ -11,11 +11,7 @@
 # Do
 
 - [ ] View all foods
-- [ ] View today's meal
-- [x] Settings
-    - [x] Button in navbar
-    - [ ] Set macro range goals
-- [x] Create new food
+    - Sorted by recency and frequency
 - [ ] Voice recognition: gemini-2.5
 - [ ] Image recognition: gemini-2.5
 - [ ] Analytics: PostHog

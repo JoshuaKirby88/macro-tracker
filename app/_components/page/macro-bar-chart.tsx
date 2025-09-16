@@ -18,7 +18,7 @@ const chartConfig: ChartConfig = {
 export const MacroBarChart = () => {
 	const today = dateFormatter.getLocalDateString(new Date())
 	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { forDate: today })
-	const goal = useQuery(api.goals.getForDate, { forDate: today })
+	const goal = useQuery(api.goals.forDate, { forDate: today })
 
 	if (!entriesWithFoods) {
 		return null
