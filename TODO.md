@@ -11,7 +11,7 @@
 # Do
 
 - [ ] Settings
-    - [ ] Button in navbar
+    - [x] Button in navbar
     - [ ] Set macro range goals
 - [x] Create new food
 - [ ] Voice recognition: gemini-2.5

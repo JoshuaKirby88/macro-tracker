@@ -1,7 +1,10 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
+import Image from "next/image"
+import Link from "next/link"
 import "./globals.css"
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
+import { SettingsIcon } from "lucide-react"
 import { Button } from "@/components/shadcn/button"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
 import { ThemeProvider } from "./_components/layout/providers/theme-provider"
@@ -29,21 +32,32 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
 						<ConvexProvider>
-							<header className="flex justify-end items-center p-4 gap-4 h-16">
-								<ThemeDropdown />
+							<header className="flex justify-between items-center p-4 h-16">
+								<Link href="/" aria-label="Home" className="inline-flex items-center">
+									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={28} height={28} priority />
+								</Link>
 
-								<SignedOut>
-									<SignInButton>
-										<Button variant="outline">Sign In</Button>
-									</SignInButton>
-									<SignUpButton>
-										<Button>Sign Up</Button>
-									</SignUpButton>
-								</SignedOut>
+								<div className="flex items-center gap-4">
+									<ThemeDropdown />
 
-								<SignedIn>
-									<UserButton />
-								</SignedIn>
+									<SignedOut>
+										<SignInButton>
+											<Button variant="outline">Sign In</Button>
+										</SignInButton>
+										<SignUpButton>
+											<Button>Sign Up</Button>
+										</SignUpButton>
+									</SignedOut>
+
+									<SignedIn>
+										<Button variant="ghost" size="icon" asChild>
+											<Link href="/settings" aria-label="Settings">
+												<SettingsIcon className="h-5 w-5" />
+											</Link>
+										</Button>
+										<UserButton />
+									</SignedIn>
+								</div>
 							</header>
 
 							{children}
