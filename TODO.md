@@ -13,9 +13,7 @@
 - [ ] Settings
     - [ ] Button in navbar
     - [ ] Set macro range goals
-- [ ] Create new food
-    - [ ] Enter name, macros
-    - [ ] Create VS Create and add
+- [x] Create new food
 - [ ] Voice recognition: gemini-2.5
 - [ ] Image recognition: gemini-2.5
 - [ ] Analytics: PostHog
