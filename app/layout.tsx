@@ -3,9 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
 import "./globals.css"
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
-import { SettingsIcon } from "lucide-react"
-import { Button } from "@/components/shadcn/button"
+import { ClerkProvider } from "@clerk/nextjs"
+import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
 import { ThemeProvider } from "./_components/layout/providers/theme-provider"
 import { ThemeDropdown } from "./_components/layout/theme-dropdown"
@@ -40,23 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 								<div className="flex items-center gap-4">
 									<ThemeDropdown />
 
-									<SignedOut>
-										<SignInButton>
-											<Button variant="outline">Sign In</Button>
-										</SignInButton>
-										<SignUpButton>
-											<Button>Sign Up</Button>
-										</SignUpButton>
-									</SignedOut>
-
-									<SignedIn>
-										<Button variant="ghost" size="icon" asChild>
-											<Link href="/settings" aria-label="Settings">
-												<SettingsIcon className="h-5 w-5" />
-											</Link>
-										</Button>
-										<UserButton />
-									</SignedIn>
+									<AuthButtons />
 								</div>
 							</header>
 

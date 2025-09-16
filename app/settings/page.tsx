@@ -1,6 +1,5 @@
 "use client"
 
-import { useAuthActions, useAuthToken } from "@convex-dev/auth/react"
 import type { AnyFieldApi } from "@tanstack/react-form"
 import { useForm } from "@tanstack/react-form"
 import { useMutation, useQuery } from "convex/react"
@@ -246,21 +245,7 @@ function SettingsContent() {
 }
 
 const Page: React.FC = () => {
-	const token = useAuthToken()
-	const { signIn } = useAuthActions()
-	return token === null ? (
-		<Card>
-			<CardHeader>
-				<CardTitle>Daily macro goals</CardTitle>
-				<CardDescription>Sign in to view and save your goals.</CardDescription>
-			</CardHeader>
-			<CardFooter>
-				<Button onClick={() => void signIn("anonymous")}>Sign in</Button>
-			</CardFooter>
-		</Card>
-	) : (
-		<SettingsContent />
-	)
+	return <SettingsContent />
 }
 
 export default Page
