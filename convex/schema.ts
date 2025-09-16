@@ -71,6 +71,6 @@ export default defineSchema({
 		updatedAt: v.number(),
 	})
 		// Fetch latest goal whose startsOn <= target day
-		.index("by_user_startsOn", ["userId", "startsOn"]) 
+		.index("by_user_startsOn", ["userId", "startsOn"])
 		.index("by_user_updatedAt", ["userId", "updatedAt"]),
 })

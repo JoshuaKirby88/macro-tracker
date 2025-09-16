@@ -10,15 +10,12 @@
 
 # Do
 
-- [ ] Home
-    - Chart on current macro VS goal
-    - Quick add previous foods
 - [ ] Settings
-    - Button in navbar
-    - Set macro range goals
+    - [ ] Button in navbar
+    - [ ] Set macro range goals
 - [ ] Create new food
-    - Enter name, macros
-    - Create VS Create and add
+    - [ ] Enter name, macros
+    - [ ] Create VS Create and add
 - [ ] Voice recognition: gemini-2.5
 - [ ] Image recognition: gemini-2.5
 - [ ] Analytics: PostHog
