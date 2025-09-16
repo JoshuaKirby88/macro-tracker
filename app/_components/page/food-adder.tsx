@@ -1,11 +1,11 @@
 "use client"
 
-import * as React from "react"
-import Link from "next/link"
 import { useMutation, useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
+import Link from "next/link"
+import * as React from "react"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
+import { api } from "@/convex/_generated/api"
 
 export const FoodAdder: React.FC = () => {
 	const foods = useQuery(api.foods.listForUser, {}) as any[] | undefined
@@ -13,6 +13,7 @@ export const FoodAdder: React.FC = () => {
 
 	const [selectedFoodId, setSelectedFoodId] = React.useState<string>("")
 	const [quantity, setQuantity] = React.useState<number>(1)
+	const [mealType, setMealType] = React.useState<string>("")
 	const [submitting, setSubmitting] = React.useState(false)
 	const [message, setMessage] = React.useState<string | null>(null)
 
@@ -21,7 +22,7 @@ export const FoodAdder: React.FC = () => {
 		setSubmitting(true)
 		setMessage(null)
 		try {
-			await createEntry({ foodId: selectedFoodId as any, quantity })
+			await createEntry({ foodId: selectedFoodId as any, quantity, mealType: mealType ? mealType : undefined })
 			setMessage("Added to today's entries")
 		} catch (err: any) {
 			setMessage(err?.message ?? "Something went wrong")
@@ -48,7 +49,7 @@ export const FoodAdder: React.FC = () => {
 
 			<CardContent className="grid gap-4">
 				{hasFoods ? (
-					<div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] items-end gap-3">
+					<div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto_auto] items-end gap-3">
 						<label className="grid gap-1">
 							<span className="text-sm text-muted-foreground">Food</span>
 							<select
@@ -70,12 +71,26 @@ export const FoodAdder: React.FC = () => {
 							<span className="text-sm text-muted-foreground">Quantity</span>
 							<input
 								type="number"
-								min={0.01}
+								min={0.25}
 								step={0.25}
 								value={quantity}
 								onChange={(e) => setQuantity(Number(e.target.value))}
 								className="h-10 w-28 rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
 							/>
+						</label>
+
+						<label className="grid gap-1">
+							<span className="text-sm text-muted-foreground">Meal</span>
+							<select
+								className="h-10 w-32 rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								value={mealType}
+								onChange={(e) => setMealType(e.target.value)}
+							>
+								<option value="">Meal…</option>
+								<option value="breakfast">Breakfast</option>
+								<option value="lunch">Lunch</option>
+								<option value="dinner">Dinner</option>
+							</select>
 						</label>
 
 						<div className="sm:justify-self-end">

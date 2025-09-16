@@ -10,6 +10,8 @@
 
 # Do
 
+- [ ] View all foods
+- [ ] View today's meal
 - [x] Settings
     - [x] Button in navbar
     - [ ] Set macro range goals

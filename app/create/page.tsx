@@ -200,7 +200,7 @@ const Page: React.FC = () => {
 											name={field.name}
 											type="number"
 											min={0.01}
-											step={0.5}
+											step={0.01}
 											value={field.state.value}
 											onBlur={field.handleBlur}
 											onChange={(e) => field.handleChange(e.target.value)}
@@ -400,7 +400,7 @@ const Page: React.FC = () => {
 											id={field.name}
 											name={field.name}
 											type="number"
-											min={0.01}
+											min={0.25}
 											step={0.25}
 											value={field.state.value}
 											onBlur={field.handleBlur}
@@ -420,15 +420,19 @@ const Page: React.FC = () => {
 								name="mealType"
 								children={(field) => (
 									<>
-										<input
+										<select
 											id={field.name}
 											name={field.name}
 											value={field.state.value}
 											onBlur={field.handleBlur}
 											onChange={(e) => field.handleChange(e.target.value)}
 											className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
-											placeholder="e.g., breakfast"
-										/>
+										>
+											<option value="">Select meal…</option>
+											<option value="breakfast">Breakfast</option>
+											<option value="lunch">Lunch</option>
+											<option value="dinner">Dinner</option>
+										</select>
 										<FieldInfo field={field} />
 									</>
 								)}
