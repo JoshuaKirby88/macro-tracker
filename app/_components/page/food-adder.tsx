@@ -10,10 +10,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ca
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/shadcn/command"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
+import type { Food } from "@/utils/convex-types"
+import { dateUtil } from "@/utils/date-util"
 import { type EntryMealType, entryUtil } from "@/utils/entry-util"
 
 export const FoodAdder = () => {
-	const foods = useQuery(api.foods.listForUser, {}) ?? []
+	const foods = useQuery(api.foods.forUser, {}) ?? []
 	const createEntry = useMutation(api.entries.create)
 
 	const [selectedFoodId, setSelectedFoodId] = React.useState<string>("")
@@ -42,7 +44,7 @@ export const FoodAdder = () => {
 		setSubmitting(true)
 		setMessage(null)
 		try {
-			await createEntry({ foodId: selectedFoodId as any, quantity, mealType: mealType ? mealType : undefined })
+			await createEntry({ foodId: selectedFoodId as Food["_id"], quantity, mealType, date: dateUtil.getDateString(new Date()) })
 			setMessage("Added to today's entries")
 		} catch (err: any) {
 			setMessage(err?.message ?? "Something went wrong")

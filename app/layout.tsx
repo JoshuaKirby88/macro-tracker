@@ -33,10 +33,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
 						<ConvexProvider>
-							<header className="flex justify-between items-center p-4 h-16">
+							<header className="flex justify-between items-center p-4 h-16 sticky top-0 bg-background z-10">
 								<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
 									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={34} height={34} priority />
-									<span className={cn("text-xl text-muted-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
+									<span className={cn("text-xl text-muted-foreground hover:text-foreground transition-all", SFProRoundedSemibold.className)}>Onigiri</span>
 								</Link>
 
 								<div className="flex items-center gap-4">

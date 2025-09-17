@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shadcn/chart"
 import { api } from "@/convex/_generated/api"
-import { dateFormatter } from "@/utils/date-formatter"
+import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 
 const chartConfig: ChartConfig = {
@@ -16,9 +16,9 @@ const chartConfig: ChartConfig = {
 }
 
 export const MacroBarChart = () => {
-	const today = dateFormatter.getLocalDateString(new Date())
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { forDate: today })
-	const goal = useQuery(api.goals.forDate, { forDate: today })
+	const today = dateUtil.getDateString(new Date())
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
+	const goal = useQuery(api.goals.forDate, { date: today })
 
 	if (!entriesWithFoods) {
 		return null
@@ -33,9 +33,11 @@ export const MacroBarChart = () => {
 		{ id: "protein", label: "Protein (g)", consumed: Math.round(totals.protein), goal: goal?.protein ?? 0 },
 	] as const
 
+	const gramMaxConsumed = Math.max(...series.filter((s) => s.id !== "calories").map((s) => s.consumed)) || 1
+	const hasAnyGoal = series.some((s) => s.goal > 0)
 	const data = series.map((m) => ({
 		...m,
-		percent: m.goal > 0 ? Math.min(150, (m.consumed / m.goal) * 100) : 0,
+		percent: Math.min(150, (m.goal > 0 ? m.consumed / m.goal : m.id === "calories" ? 1 : m.consumed / gramMaxConsumed) * 100),
 	}))
 
 	return (
@@ -49,7 +51,7 @@ export const MacroBarChart = () => {
 					<BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
 						<CartesianGrid vertical={false} strokeDasharray="3 3" />
 						<XAxis dataKey="label" tickLine={false} axisLine={false} />
-						<YAxis unit="%" domain={[0, 150]} tickLine={false} axisLine={false} />
+						<YAxis unit="%" domain={hasAnyGoal ? [0, 150] : [0, 100]} tickLine={false} axisLine={false} />
 						<ChartTooltip
 							cursor={{ fill: "hsl(var(--muted))", opacity: 0.25 }}
 							content={

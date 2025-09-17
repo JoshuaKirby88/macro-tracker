@@ -5,7 +5,7 @@ import * as React from "react"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
-import { dateFormatter } from "@/utils/date-formatter"
+import { dateUtil } from "@/utils/date-util"
 
 type GoalDefaults = {
 	calories: string
@@ -14,8 +14,18 @@ type GoalDefaults = {
 	carbs: string
 }
 
-function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: ReturnType<typeof useMutation<typeof api.goals.createOrUpdate>> }) {
-	const { defaults, today, upsert } = props as any
+const Page = () => {
+	const today = dateUtil.getDateString(new Date())
+	const goal = useQuery(api.goals.forDate, { date: today })
+
+	const defaults: GoalDefaults = {
+		calories: goal?.calories != null ? String(goal.calories) : "",
+		protein: goal?.protein != null ? String(goal.protein) : "",
+		fat: goal?.fat != null ? String(goal.fat) : "",
+		carbs: goal?.carbs != null ? String(goal.carbs) : "",
+	}
+
+	const createOrUpdateGoal = useMutation(api.goals.createOrUpdate)
 	const [message, setMessage] = React.useState<string | null>(null)
 
 	const [calories, setCalories] = React.useState<string>(defaults.calories)
@@ -66,8 +76,8 @@ function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: Return
 		setMessage(null)
 		setIsSubmitting(true)
 		try {
-			await upsert({
-				forDate: today,
+			await createOrUpdateGoal({
+				date: today,
 				calories: toOptionalNumber(calories),
 				protein: toOptionalNumber(protein),
 				fat: toOptionalNumber(fat),
@@ -203,21 +213,6 @@ function GoalForm(props: { defaults: GoalDefaults; today: string; upsert: Return
 			</form>
 		</Card>
 	)
-}
-
-const Page = () => {
-	const today = dateFormatter.getLocalDateString(new Date())
-	const goal = useQuery(api.goals.forDate, { forDate: today })
-	const upsert = useMutation(api.goals.createOrUpdate)
-
-	const defaults: GoalDefaults = {
-		calories: goal?.calories != null ? String(goal.calories) : "",
-		protein: goal?.protein != null ? String(goal.protein) : "",
-		fat: goal?.fat != null ? String(goal.fat) : "",
-		carbs: goal?.carbs != null ? String(goal.carbs) : "",
-	}
-
-	return <GoalForm defaults={defaults} today={today} upsert={upsert} />
 }
 
 export default Page

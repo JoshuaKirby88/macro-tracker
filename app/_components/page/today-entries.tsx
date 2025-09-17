@@ -3,12 +3,12 @@
 import { useQuery } from "convex/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
-import { dateFormatter } from "@/utils/date-formatter"
+import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 
 export const TodayEntries = () => {
-	const today = dateFormatter.getLocalDateString(new Date())
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { forDate: today })
+	const today = dateUtil.getDateString(new Date())
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
 	if (!entriesWithFoods) return null
 
 	if (!entriesWithFoods.entries.length) {

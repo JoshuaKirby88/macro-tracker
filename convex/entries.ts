@@ -1,5 +1,4 @@
 import { v } from "convex/values"
-import { dateFormatter } from "@/utils/date-formatter"
 import { mutation, query } from "./_generated/server"
 
 export const create = mutation({
@@ -8,6 +7,7 @@ export const create = mutation({
 		quantity: v.number(),
 		mealType: v.optional(v.string()),
 		note: v.optional(v.string()),
+		date: v.string(),
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
@@ -17,11 +17,12 @@ export const create = mutation({
 		if (!food || food.userId !== identity.subject) throw new Error("Food not found")
 
 		const now = Date.now()
+
 		const entryId = await ctx.db.insert("entry", {
 			userId: identity.subject,
 			foodId: args.foodId,
 			quantity: args.quantity,
-			loggedAt: now,
+			entryDate: args.date,
 			mealType: args.mealType,
 			note: args.note,
 			createdAt: now,
@@ -33,16 +34,16 @@ export const create = mutation({
 })
 
 export const withFoodsForDate = query({
-	args: { forDate: v.string() },
+	args: { date: v.string() },
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) return null
 
-		const { startMs, endMs } = dateFormatter.dateStringToRange(args.forDate)
-
 		const entries = await ctx.db
 			.query("entry")
-			.withIndex("by_user_loggedAt", (q) => q.eq("userId", identity.subject).gte("loggedAt", startMs).lt("loggedAt", endMs))
+			.withIndex("byUserIdEntryDate")
+			.filter((q) => q.eq(q.field("userId"), identity.subject))
+			.filter((q) => q.eq(q.field("entryDate"), args.date))
 			.collect()
 
 		const foods = (await Promise.all(Array.from(new Set(entries.map((e) => e.foodId))).map((foodId) => ctx.db.get(foodId)))).filter((food) => food !== null)

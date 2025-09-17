@@ -1,24 +1,21 @@
-import { query, mutation } from "./_generated/server"
 import { v } from "convex/values"
+import { mutation, query } from "./_generated/server"
 
-// List foods for the authenticated user, sorted by name
-export const listForUser = query({
+export const forUser = query({
 	args: {},
 	handler: async (ctx) => {
 		const identity = await ctx.auth.getUserIdentity()
-		// Return empty list if not signed in to keep client simple
 		if (!identity) return []
 
 		const foods = await ctx.db
 			.query("food")
-			.withIndex("by_user_name", (q) => q.eq("userId", identity.subject))
+			.withIndex("byUserId", (q) => q.eq("userId", identity.subject))
 			.collect()
 
 		return foods
 	},
 })
 
-// Create a new food for the authenticated user
 export const create = mutation({
 	args: {
 		name: v.string(),
@@ -31,13 +28,14 @@ export const create = mutation({
 		fat: v.number(),
 		carbs: v.number(),
 		sugar: v.number(),
-		fiber: v.optional(v.number()),
+		fiber: v.number(),
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) throw new Error("Not authenticated")
 
 		const now = Date.now()
+
 		const insertedId = await ctx.db.insert("food", {
 			userId: identity.subject,
 			name: args.name.trim(),
@@ -50,7 +48,7 @@ export const create = mutation({
 			fat: args.fat,
 			carbs: args.carbs,
 			sugar: args.sugar,
-			fiber: typeof args.fiber === "number" ? args.fiber : undefined,
+			fiber: args.fiber,
 			createdAt: now,
 			updatedAt: now,
 		})

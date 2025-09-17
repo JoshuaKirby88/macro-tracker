@@ -5,8 +5,9 @@ import * as React from "react"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
+import { dateUtil } from "@/utils/date-util"
 
-const Page: React.FC = () => {
+const Page = () => {
 	const createFood = useMutation(api.foods.create)
 	const createEntry = useMutation(api.entries.create)
 
@@ -49,10 +50,6 @@ const Page: React.FC = () => {
 
 	// Helpers
 	const toRequiredNumber = (v: string): number => Number(v.trim())
-	const toOptionalNumber = (v: string): number | undefined => {
-		const t = v.trim()
-		return t === "" ? undefined : Number(t)
-	}
 
 	// Validators (string in, message or undefined)
 	const requiredText = (value: string) => (!value.trim() ? "Required" : undefined)
@@ -107,16 +104,17 @@ const Page: React.FC = () => {
 				fat: toRequiredNumber(fat),
 				carbs: toRequiredNumber(carbs),
 				sugar: toRequiredNumber(sugar),
-				fiber: toOptionalNumber(fiber),
+				fiber: toRequiredNumber(fiber),
 			})
 
 			if (submitModeRef.current === "createAdd") {
 				const qty = quantity.trim() === "" ? 1 : Number(quantity)
 				await createEntry({
-					foodId: foodId as any,
+					foodId,
 					quantity: qty,
 					mealType: mealType.trim() ? mealType.trim() : undefined,
 					note: note.trim() ? note.trim() : undefined,
+					date: dateUtil.getDateString(new Date()),
 				})
 				setMessage("Created and added to today's entries")
 			} else {
