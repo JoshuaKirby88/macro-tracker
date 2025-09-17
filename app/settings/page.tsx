@@ -4,16 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "convex/react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
-import z from "zod"
+import type z from "zod/v3"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { Input } from "@/components/shadcn/input"
 import { api } from "@/convex/_generated/api"
+import { createOrUpdateGoalSchema } from "@/convex/schema"
 import { capitalize } from "@/utils/capitalize"
 import { dateUtil } from "@/utils/date-util"
 
 const config = {
-	schema: z.object({ calories: z.number().optional(), protein: z.number().optional(), fat: z.number().optional(), carbs: z.number().optional() }),
+	schema: createOrUpdateGoalSchema.omit({ startDate: true }),
 	macros: ["calories", "protein", "fat", "carbs"] as const,
 }
 
@@ -21,14 +22,14 @@ const Page = () => {
 	const today = dateUtil.getDateString(new Date())
 	const goal = useQuery(api.goals.forDate, { date: today })
 	const createOrUpdateGoal = useMutation(api.goals.createOrUpdate)
-	const form = useForm<z.infer<typeof config.schema>>({ resolver: zodResolver(config.schema), defaultValues: goal ?? undefined })
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: goal ?? undefined })
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
-			await createOrUpdateGoal({ date: today, ...input })
+			await createOrUpdateGoal({ ...input, startDate: today })
 			toast.success("Saved. Applies today and future days.")
-		} catch (err: any) {
-			toast.error(err?.message ?? "Failed to save goal.")
+		} catch (error: any) {
+			toast.error(error?.message ?? "Failed to save goal.")
 		}
 	}
 

@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/ca
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/shadcn/command"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
-import type { Food } from "@/utils/convex-types"
+import type { Food } from "@/convex/schema"
 import { dateUtil } from "@/utils/date-util"
 import { type EntryMealType, entryUtil } from "@/utils/entry-util"
 

@@ -1,4 +1,4 @@
-import type { Entry, Food } from "./convex-types"
+import type { Entry, Food } from "@/convex/schema"
 
 export type EntryMealType = (typeof entryUtil.mealTypes)[number]
 

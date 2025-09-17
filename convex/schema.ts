@@ -1,44 +1,55 @@
 import { defineSchema, defineTable } from "convex/server"
-import { v } from "convex/values"
+import { zid, zodOutputToConvex } from "convex-helpers/server/zod"
+import z from "zod/v3"
+
+export type Food = z.infer<typeof foodSchema>
+export const foodSchema = z.object({
+	userId: z.string(),
+	name: z.string(),
+	image: z.string(),
+	brand: z.optional(z.string()),
+	description: z.optional(z.string()),
+	servingSize: z.number(),
+	servingUnit: z.string(),
+	calories: z.number(),
+	protein: z.number(),
+	fat: z.number(),
+	carbs: z.number(),
+	sugar: z.number(),
+	fiber: z.number(),
+	createdAt: z.number(),
+	updatedAt: z.number(),
+})
+export const createFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true })
+
+export type Entry = z.infer<typeof entrySchema>
+export const entrySchema = z.object({
+	userId: z.string(),
+	foodId: zid("food"),
+	quantity: z.number(),
+	entryDate: z.string(),
+	mealType: z.enum(["breakfast", "lunch", "dinner"]),
+	note: z.optional(z.string()),
+	createdAt: z.number(),
+	updatedAt: z.number(),
+})
+export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
+
+export type Goal = z.infer<typeof goalSchema>
+export const goalSchema = z.object({
+	userId: z.string(),
+	startDate: z.string(),
+	calories: z.optional(z.number()),
+	protein: z.optional(z.number()),
+	fat: z.optional(z.number()),
+	carbs: z.optional(z.number()),
+	createdAt: z.number(),
+	updatedAt: z.number(),
+})
+export const createOrUpdateGoalSchema = goalSchema.omit({ userId: true, createdAt: true, updatedAt: true })
 
 export default defineSchema({
-	food: defineTable({
-		userId: v.string(),
-		name: v.string(),
-		image: v.string(),
-		brand: v.optional(v.string()),
-		description: v.optional(v.string()),
-		servingSize: v.number(),
-		servingUnit: v.string(),
-		calories: v.number(),
-		protein: v.number(),
-		fat: v.number(),
-		carbs: v.number(),
-		sugar: v.number(),
-		fiber: v.number(),
-		createdAt: v.number(),
-		updatedAt: v.number(),
-	}).index("byUserId", ["userId", "name"]),
-
-	entry: defineTable({
-		userId: v.string(),
-		foodId: v.id("food"),
-		quantity: v.number(),
-		entryDate: v.string(),
-		mealType: v.optional(v.string()),
-		note: v.optional(v.string()),
-		createdAt: v.number(),
-		updatedAt: v.number(),
-	}).index("byUserIdEntryDate", ["userId", "entryDate"]),
-
-	goal: defineTable({
-		userId: v.string(),
-		startDate: v.string(),
-		calories: v.optional(v.number()),
-		protein: v.optional(v.number()),
-		fat: v.optional(v.number()),
-		carbs: v.optional(v.number()),
-		createdAt: v.number(),
-		updatedAt: v.number(),
-	}).index("byUserIdStartDate", ["userId", "startDate"]),
+	food: defineTable(zodOutputToConvex(foodSchema)).index("byUserId", ["userId", "name"]),
+	entry: defineTable(zodOutputToConvex(entrySchema)).index("byUserIdEntryDate", ["userId", "entryDate"]),
+	goal: defineTable(zodOutputToConvex(goalSchema)).index("byUserIdStartDate", ["userId", "startDate"]),
 })

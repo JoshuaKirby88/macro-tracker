@@ -1,14 +1,10 @@
 import { v } from "convex/values"
+import { zodOutputToConvex } from "convex-helpers/server/zod"
 import { mutation, query } from "./_generated/server"
+import { createEntrySchema } from "./schema"
 
 export const create = mutation({
-	args: {
-		foodId: v.id("food"),
-		quantity: v.number(),
-		mealType: v.optional(v.string()),
-		note: v.optional(v.string()),
-		date: v.string(),
-	},
+	args: zodOutputToConvex(createEntrySchema),
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) throw new Error("Not authenticated")
@@ -20,13 +16,9 @@ export const create = mutation({
 
 		const entryId = await ctx.db.insert("entry", {
 			userId: identity.subject,
-			foodId: args.foodId,
-			quantity: args.quantity,
-			entryDate: args.date,
-			mealType: args.mealType,
-			note: args.note,
 			createdAt: now,
 			updatedAt: now,
+			...args,
 		})
 
 		return entryId

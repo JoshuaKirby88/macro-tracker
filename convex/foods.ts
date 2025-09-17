@@ -1,43 +1,16 @@
-import { v } from "convex/values"
+import { zodOutputToConvex } from "convex-helpers/server/zod"
 import { mutation, query } from "./_generated/server"
-
-export const forUser = query({
-	args: {},
-	handler: async (ctx) => {
-		const identity = await ctx.auth.getUserIdentity()
-		if (!identity) return []
-
-		const foods = await ctx.db
-			.query("food")
-			.withIndex("byUserId", (q) => q.eq("userId", identity.subject))
-			.collect()
-
-		return foods
-	},
-})
+import { createFoodSchema } from "./schema"
 
 export const create = mutation({
-	args: {
-		name: v.string(),
-		image: v.string(),
-		brand: v.optional(v.string()),
-		description: v.optional(v.string()),
-		servingSize: v.number(),
-		servingUnit: v.string(),
-		calories: v.number(),
-		protein: v.number(),
-		fat: v.number(),
-		carbs: v.number(),
-		sugar: v.number(),
-		fiber: v.number(),
-	},
+	args: zodOutputToConvex(createFoodSchema),
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) throw new Error("Not authenticated")
 
 		const now = Date.now()
 
-		const insertedId = await ctx.db.insert("food", {
+		await ctx.db.insert("food", {
 			userId: identity.subject,
 			name: args.name.trim(),
 			image: args.image.trim(),
@@ -54,7 +27,19 @@ export const create = mutation({
 			createdAt: now,
 			updatedAt: now,
 		})
+	},
+})
 
-		return insertedId
+export const forUser = query({
+	handler: async (ctx) => {
+		const identity = await ctx.auth.getUserIdentity()
+		if (!identity) return []
+
+		const foods = await ctx.db
+			.query("food")
+			.withIndex("byUserId", (q) => q.eq("userId", identity.subject))
+			.collect()
+
+		return foods
 	},
 })

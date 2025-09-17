@@ -16,8 +16,8 @@ export const ImagePreview = ({ fileName, selected, ...props }: { fileName: strin
 		<div
 			{...props}
 			className={cn(
-				"group relative aspect-square w-full cursor-pointer overflow-clip rounded-2xl border border-transparent hover:border-muted-foreground/30",
-				selected && "border-blue-500",
+				"group relative aspect-square w-full cursor-pointer overflow-clip rounded-2xl border border-transparent hover:border-mono-400",
+				selected && "border-mono-400",
 				props.className,
 			)}
 		>

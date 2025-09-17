@@ -10,24 +10,17 @@ import { ImagePreview, ImagePreviewSkeleton } from "./image-preview"
 const config = {
 	topK: 30,
 	minScore: 0.2,
-	defaultValue: "onigiri.png",
-	defaultQuery: "Onigiri",
 }
 
-export const ImagePicker = (props: { value: string; onChange: (value: string) => void }) => {
+export const ImagePicker = (props: { value: string; onChange: (value: string) => void; defaultQuery?: string }) => {
 	const [isOpen, setIsOpen] = useState(false)
-	const [value, setValue] = useState(config.defaultValue)
-	const [query, setQuery] = React.useState(config.defaultQuery)
-	const [debouncedQuery, setDebouncedQuery] = React.useState(config.defaultQuery)
+	const [query, setQuery] = React.useState(props.defaultQuery ?? "")
+	const [debouncedQuery, setDebouncedQuery] = React.useState(props.defaultQuery ?? "")
 
 	React.useEffect(() => {
 		const t = setTimeout(() => setDebouncedQuery(query.trim()), 300)
 		return () => clearTimeout(t)
 	}, [query])
-
-	React.useEffect(() => {
-		setValue(props.value)
-	}, [props.value])
 
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["image-search", debouncedQuery],
@@ -38,7 +31,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger className="size-30">
-				<ImagePreview fileName={value} />
+				<ImagePreview fileName={props.value} />
 			</DialogTrigger>
 
 			<DialogContent className="flex size-[50rem] max-h-[90%] max-w-[95%] flex-col">
@@ -58,7 +51,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 							<ImagePreview
 								key={fileName}
 								fileName={fileName}
-								selected={fileName === value}
+								selected={fileName === props.value}
 								onClick={() => {
 									props.onChange(fileName)
 									setIsOpen(false)
