@@ -4,7 +4,7 @@ import { TodayEntries } from "./_components/page/today-entries"
 
 const Page = () => {
 	return (
-		<div className="p-4 space-y-10">
+		<div className="space-y-10 p-4">
 			<MacroBarChart />
 
 			<TodayEntries />

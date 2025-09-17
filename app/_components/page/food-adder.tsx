@@ -1,138 +1,82 @@
 "use client"
 
-import { useMutation, useQuery } from "convex/react"
-import { PlusIcon, SearchIcon } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "convex/react"
+import { PenIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
-import * as React from "react"
-import { NumberInput } from "@/components/number-input"
+import { Controller, useForm } from "react-hook-form"
+import { toast } from "sonner"
+import type z from "zod/v3"
+import { FoodCommand } from "@/components/food-command"
 import { Button, buttonVariants } from "@/components/shadcn/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/card"
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/shadcn/command"
+import { Card } from "@/components/shadcn/card"
+import { Input } from "@/components/shadcn/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
-import type { Food } from "@/convex/schema"
+import { createEntrySchema } from "@/convex/schema"
 import { dateUtil } from "@/utils/date-util"
-import { type EntryMealType, entryUtil } from "@/utils/entry-util"
+import { entryUtil } from "@/utils/entry-util"
+
+const config = {
+	schema: createEntrySchema.omit({ entryDate: true }),
+}
 
 export const FoodAdder = () => {
-	const foods = useQuery(api.foods.forUser, {}) ?? []
 	const createEntry = useMutation(api.entries.create)
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: "breakfast" } })
+	const selectedFoodId = form.watch("foodId")
 
-	const [selectedFoodId, setSelectedFoodId] = React.useState<string>("")
-	const selectedFood = React.useMemo(() => foods.find((f) => f._id === selectedFoodId), [foods, selectedFoodId])
-	const selectedFoodLabel = selectedFood ? `${selectedFood.name}${selectedFood.brand ? ` (${selectedFood.brand})` : ""} — ${selectedFood.servingSize} ${selectedFood.servingUnit}` : ""
-	const [quantity, setQuantity] = React.useState(1)
-	const [mealType, setMealType] = React.useState<EntryMealType>("breakfast")
-	const [submitting, setSubmitting] = React.useState(false)
-	const [message, setMessage] = React.useState<string | null>(null)
-	const [isCommandOpen, setIsCommandOpen] = React.useState(false)
-
-	React.useEffect(() => {
-		const down = (e: KeyboardEvent) => {
-			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault()
-				setIsCommandOpen((open) => !open)
-			}
-		}
-
-		document.addEventListener("keydown", down)
-		return () => document.removeEventListener("keydown", down)
-	}, [])
-
-	const onAdd = async () => {
-		if (!selectedFoodId || !quantity || quantity <= 0) return
-		setSubmitting(true)
-		setMessage(null)
+	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
-			await createEntry({ foodId: selectedFoodId as Food["_id"], quantity, mealType, date: dateUtil.getDateString(new Date()) })
-			setMessage("Added to today's entries")
-		} catch (err: any) {
-			setMessage(err?.message ?? "Something went wrong")
-		} finally {
-			setSubmitting(false)
+			await createEntry({ ...input, entryDate: dateUtil.getDateString(new Date()) })
+			toast.success("Added to today's entries")
+		} catch (error: any) {
+			toast.error(error?.message ?? "Something went wrong")
 		}
 	}
 
 	return (
-		<Card className="-translate-x-1/2 fixed bottom-10 left-1/2 w-[30rem] max-w-[95%]">
-			<CardHeader className="hidden items-start justify-between gap-4 sm:flex">
-				<CardTitle>Add food</CardTitle>
+		<Card className="-translate-x-1/2 fixed bottom-10 left-1/2 w-[30rem] max-w-[95%] flex-row p-4">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="grid w-full gap-3">
+				<div className="flex gap-4">
+					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
 
-				<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
-					<PlusIcon />
-				</Link>
-			</CardHeader>
+					<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon", className: "ml-auto" })}>
+						<PenIcon />
+					</Link>
 
-			<CardContent className="grid gap-4">
-				<div className="grid gap-3">
-					<div className="grid gap-1">
-						<span className="text-muted-foreground text-sm">Food</span>
-
-						<Button variant="outline" className="w-full px-3 text-sm" onClick={() => setIsCommandOpen(true)}>
-							{selectedFoodLabel ? (
-								<span className="w-full text-left">{selectedFoodLabel}</span>
-							) : (
-								<span className="flex w-full items-center gap-2 text-muted-foreground">
-									<SearchIcon />
-									Search foods...
-									<kbd className="ml-auto flex items-center rounded border px-1 font-[inherit] text-xs">⌘K</kbd>
-								</span>
-							)}
-						</Button>
-
-						<CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen} className="w-[35rem]">
-							<CommandInput placeholder="Type to search foods…" />
-							<CommandList>
-								<CommandEmpty>No results found.</CommandEmpty>
-								<CommandGroup heading="Foods">
-									{foods.map((food) => (
-										<CommandItem
-											key={food._id}
-											value={`${food.name} ${food.brand}`}
-											onSelect={() => {
-												setSelectedFoodId(food._id)
-												setIsCommandOpen(false)
-											}}
-										>
-											{food.name}
-											{food.brand ? ` (${food.brand})` : ""} — {food.servingSize} {food.servingUnit}
-										</CommandItem>
-									))}
-								</CommandGroup>
-							</CommandList>
-						</CommandDialog>
-					</div>
-
-					<div className={`grid grid-cols-1 items-end gap-3 sm:grid-cols-[auto_auto_auto] ${!selectedFoodId ? "hidden" : ""}`}>
-						<div className="grid gap-1">
-							<span className="text-muted-foreground text-sm">Quantity</span>
-							<NumberInput value={quantity} onChange={(value) => setQuantity(value)} />
-						</div>
-
-						<div className="grid gap-1">
-							<span className="text-muted-foreground text-sm">Meal</span>
-							<Select value={mealType} onValueChange={(v) => setMealType(v as EntryMealType)}>
-								<SelectTrigger className="capitalize">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									{entryUtil.mealTypes.map((mealType) => (
-										<SelectItem key={mealType} value={mealType} className="capitalize">
-											{mealType}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
-
-						<Button onClick={onAdd} disabled={!selectedFoodId || submitting}>
-							{submitting ? "Tracking…" : "Track"}
-						</Button>
-					</div>
+					<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
+						<PlusIcon />
+					</Link>
 				</div>
 
-				{message ? <div className="text-muted-foreground text-sm">{message}</div> : null}
-			</CardContent>
+				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
+					<div className="grid gap-1">
+						<span className="text-muted-foreground text-sm">Quantity</span>
+						<Input {...form.register("quantity")} />
+					</div>
+
+					<div className="grid gap-1">
+						<span className="text-muted-foreground text-sm">Meal</span>
+						<Select {...form.register("mealType")}>
+							<SelectTrigger className="w-full capitalize">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								{entryUtil.mealTypes.map((mealType) => (
+									<SelectItem key={mealType} value={mealType} className="capitalize">
+										{mealType}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<Button type="submit" isLoading={form.formState.isSubmitting}>
+						{form.formState.isSubmitting ? "Tracking…" : "Track"}
+					</Button>
+				</div>
+			</form>
 		</Card>
 	)
 }

@@ -1,8 +1,9 @@
 import { defineSchema, defineTable } from "convex/server"
 import { zid, zodOutputToConvex } from "convex-helpers/server/zod"
 import z from "zod/v3"
+import type { DataModel } from "./_generated/dataModel"
 
-export type Food = z.infer<typeof foodSchema>
+export type Food = Pretty<z.infer<typeof foodSchema> & { _id: DataModel["food"]["document"]["_id"] }>
 export const foodSchema = z.object({
 	userId: z.string(),
 	name: z.string(),
@@ -22,7 +23,7 @@ export const foodSchema = z.object({
 })
 export const createFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true })
 
-export type Entry = z.infer<typeof entrySchema>
+export type Entry = Pretty<z.infer<typeof entrySchema> & { _id: DataModel["entry"]["document"]["_id"] }>
 export const entrySchema = z.object({
 	userId: z.string(),
 	foodId: zid("food"),
@@ -35,7 +36,7 @@ export const entrySchema = z.object({
 })
 export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
 
-export type Goal = z.infer<typeof goalSchema>
+export type Goal = Pretty<z.infer<typeof goalSchema> & { _id: DataModel["goal"]["document"]["_id"] }>
 export const goalSchema = z.object({
 	userId: z.string(),
 	startDate: z.string(),

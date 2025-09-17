@@ -20,7 +20,7 @@ export const TodayEntries = () => {
 					<CardDescription>Food you have logged today by meal.</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<div className="text-sm text-muted-foreground">No entries yet today.</div>
+					<div className="text-muted-foreground text-sm">No entries yet today.</div>
 				</CardContent>
 			</Card>
 		)
@@ -40,11 +40,12 @@ export const TodayEntries = () => {
 					return (
 						entries.length > 0 && (
 							<div key={mealType} className="grid gap-3">
-								<div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{mealType}</div>
+								<div className="font-medium text-muted-foreground text-xs uppercase tracking-wide">{mealType}</div>
 
 								<div className="grid gap-2">
 									{entries.map((entry) => {
-										const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)!
+										const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
+										if (!food) return null
 
 										return (
 											<div key={entry._id} className="flex items-center gap-5 rounded-md border p-3">
@@ -52,14 +53,14 @@ export const TodayEntries = () => {
 												<div className="min-w-0">
 													<div className="truncate font-medium">
 														{food.name}
-														{food.brand && <span className="text-sm ml-1 text-muted-foreground">({food.brand})</span>}
+														{food.brand && <span className="ml-1 text-muted-foreground text-sm">({food.brand})</span>}
 													</div>
-													<div className="text-xs text-muted-foreground">
+													<div className="text-muted-foreground text-xs">
 														{food.servingSize} × {entry.quantity}
 													</div>
 												</div>
-												<div className="shrink-0 text-right ml-auto">
-													<div className="font-mono text-sm font-semibold">{Math.round(food.calories * entry.quantity)} kcal</div>
+												<div className="ml-auto shrink-0 text-right">
+													<div className="font-mono font-semibold text-sm">{Math.round(food.calories * entry.quantity)} kcal</div>
 													<div className="text-[10px] text-muted-foreground">
 														{Math.round(food.protein * entry.quantity)}g P · {Math.round(food.carbs * entry.quantity)}g C · {Math.round(food.fat * entry.quantity)}g F
 													</div>

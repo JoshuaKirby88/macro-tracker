@@ -66,7 +66,7 @@ export const MacroBarChart = () => {
 											<div className="flex w-full flex-col gap-0.5">
 												<div className="flex items-center justify-between">
 													<span>{datum.label}</span>
-													<span className="font-mono font-medium">{Math.round(numeric)}%</span>
+													<span className="font-medium font-mono">{Math.round(numeric)}%</span>
 												</div>
 												<div className="text-muted-foreground">
 													{datum.consumed.toLocaleString()} / {datum.goal > 0 ? datum.goal.toLocaleString() : "—"}

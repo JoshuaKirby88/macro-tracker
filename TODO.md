@@ -2,6 +2,8 @@
 
 - Fix /create form
 - Fix /settings form
+- Get rid of react aria
+- Use enums for db schemas
 
 # Macro Tracker
 
