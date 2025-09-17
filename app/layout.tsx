@@ -5,6 +5,7 @@ import Link from "next/link"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { SFProRoundedSemibold } from "@/components/fonts/fonts"
+import { Toaster } from "@/components/shadcn/sonner"
 import { cn } from "@/utils/cn"
 import { GLOBALS } from "@/utils/globals"
 import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
@@ -36,10 +37,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 					<ThemeProvider>
 						<ReactQueryProvider>
 							<ConvexProvider>
-								<header className="flex justify-between items-center p-4 h-16 sticky top-0 bg-background z-10">
+								<header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-background p-4">
 									<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
 										<Image src={GLOBALS.thiings("/onigiri.png")} alt="Macro Tracker" width={34} height={34} priority />
-										<span className={cn("text-xl text-muted-foreground hover:text-foreground transition-all", SFProRoundedSemibold.className)}>Onigiri</span>
+										<span className={cn("text-muted-foreground text-xl transition-all hover:text-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
 									</Link>
 
 									<div className="flex items-center gap-4">
@@ -50,6 +51,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 								</header>
 
 								{children}
+
+								<Toaster />
 							</ConvexProvider>
 						</ReactQueryProvider>
 					</ThemeProvider>

@@ -172,7 +172,3 @@
 	height: 16px;
 	width: 16px;
 }
-
-.lucide:not([class*="stroke-"]) {
-	stroke-width: 3;
-}

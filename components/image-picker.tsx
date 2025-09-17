@@ -50,7 +50,6 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 
 				<div className="mt-4 flex-1 overflow-auto">
 					{isError ? <div className="text-destructive text-sm">Something went wrong. Try again.</div> : null}
-					{debouncedQuery.length === 0 ? <div className="text-muted-foreground text-sm">Type to search images.</div> : null}
 
 					<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
 						{isFetching && Array.from({ length: config.topK }, (_, i) => <ImagePreviewSkeleton key={i} />)}

@@ -54,7 +54,7 @@ export const FoodAdder = () => {
 	}
 
 	return (
-		<Card className="fixed bottom-10 left-1/2 -translate-x-1/2 max-w-[95%] w-[30rem]">
+		<Card className="-translate-x-1/2 fixed bottom-10 left-1/2 w-[30rem] max-w-[95%]">
 			<CardHeader className="hidden items-start justify-between gap-4 sm:flex">
 				<CardTitle>Add food</CardTitle>
 
@@ -66,13 +66,13 @@ export const FoodAdder = () => {
 			<CardContent className="grid gap-4">
 				<div className="grid gap-3">
 					<div className="grid gap-1">
-						<span className="text-sm text-muted-foreground">Food</span>
+						<span className="text-muted-foreground text-sm">Food</span>
 
-						<Button variant="outline" className="w-full text-sm px-3" onClick={() => setIsCommandOpen(true)}>
+						<Button variant="outline" className="w-full px-3 text-sm" onClick={() => setIsCommandOpen(true)}>
 							{selectedFoodLabel ? (
-								<span className="text-left w-full">{selectedFoodLabel}</span>
+								<span className="w-full text-left">{selectedFoodLabel}</span>
 							) : (
-								<span className="flex items-center gap-2 text-muted-foreground w-full">
+								<span className="flex w-full items-center gap-2 text-muted-foreground">
 									<SearchIcon />
 									Search foods...
 									<kbd className="ml-auto flex items-center rounded border px-1 font-[inherit] text-xs">⌘K</kbd>
@@ -103,14 +103,14 @@ export const FoodAdder = () => {
 						</CommandDialog>
 					</div>
 
-					<div className={`grid grid-cols-1 sm:grid-cols-[auto_auto_auto] items-end gap-3 ${!selectedFoodId ? "hidden" : ""}`}>
+					<div className={`grid grid-cols-1 items-end gap-3 sm:grid-cols-[auto_auto_auto] ${!selectedFoodId ? "hidden" : ""}`}>
 						<div className="grid gap-1">
-							<span className="text-sm text-muted-foreground">Quantity</span>
+							<span className="text-muted-foreground text-sm">Quantity</span>
 							<NumberInput value={quantity} onChange={(value) => setQuantity(value)} />
 						</div>
 
 						<div className="grid gap-1">
-							<span className="text-sm text-muted-foreground">Meal</span>
+							<span className="text-muted-foreground text-sm">Meal</span>
 							<Select value={mealType} onValueChange={(v) => setMealType(v as EntryMealType)}>
 								<SelectTrigger className="capitalize">
 									<SelectValue />
@@ -131,7 +131,7 @@ export const FoodAdder = () => {
 					</div>
 				</div>
 
-				{message ? <div className="text-sm text-muted-foreground">{message}</div> : null}
+				{message ? <div className="text-muted-foreground text-sm">{message}</div> : null}
 			</CardContent>
 		</Card>
 	)
