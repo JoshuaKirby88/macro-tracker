@@ -5,6 +5,7 @@ export default defineSchema({
 	food: defineTable({
 		userId: v.string(),
 		name: v.string(),
+		image: v.string(),
 		brand: v.optional(v.string()),
 		description: v.optional(v.string()),
 		servingSize: v.number(),

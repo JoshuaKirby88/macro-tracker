@@ -19,6 +19,7 @@ export const forUser = query({
 export const create = mutation({
 	args: {
 		name: v.string(),
+		image: v.string(),
 		brand: v.optional(v.string()),
 		description: v.optional(v.string()),
 		servingSize: v.number(),
@@ -39,6 +40,7 @@ export const create = mutation({
 		const insertedId = await ctx.db.insert("food", {
 			userId: identity.subject,
 			name: args.name.trim(),
+			image: args.image.trim(),
 			brand: args.brand?.trim(),
 			description: args.description?.trim(),
 			servingSize: args.servingSize,

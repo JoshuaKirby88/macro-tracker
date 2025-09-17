@@ -1,10 +1,7 @@
 # Current
 
-- Use thiings images for food
 - Fix /create form
 - Fix /settings form
-- Store all timestamps using server date
-- Store day-related dates using `${year}-${month}-${day}` using client date
 
 # Macro Tracker
 

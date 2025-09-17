@@ -80,7 +80,7 @@ export const FoodAdder = () => {
 							)}
 						</Button>
 
-						<CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
+						<CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen} className="w-[35rem]">
 							<CommandInput placeholder="Type to search foods…" />
 							<CommandList>
 								<CommandEmpty>No results found.</CommandEmpty>

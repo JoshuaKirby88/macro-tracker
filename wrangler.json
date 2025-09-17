@@ -20,5 +20,12 @@
 			"binding": "WORKER_SELF_REFERENCE",
 			"service": "macro-tracker"
 		}
+	],
+	"vectorize": [
+		{
+			"binding": "THIINGS_VECTOR",
+			"index_name": "thiings",
+			"remote": true
+		}
 	]
 }

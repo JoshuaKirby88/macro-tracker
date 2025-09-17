@@ -6,8 +6,10 @@ import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { SFProRoundedSemibold } from "@/components/fonts/fonts"
 import { cn } from "@/utils/cn"
+import { GLOBALS } from "@/utils/globals"
 import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
+import { ReactQueryProvider } from "./_components/layout/providers/react-query-provider"
 import { ThemeProvider } from "./_components/layout/providers/theme-provider"
 import { ThemeDropdown } from "./_components/layout/theme-dropdown"
 
@@ -32,22 +34,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 			<html lang="en">
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
-						<ConvexProvider>
-							<header className="flex justify-between items-center p-4 h-16 sticky top-0 bg-background z-10">
-								<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
-									<Image src="/thiings/onigiri.png" alt="Macro Tracker" width={34} height={34} priority />
-									<span className={cn("text-xl text-muted-foreground hover:text-foreground transition-all", SFProRoundedSemibold.className)}>Onigiri</span>
-								</Link>
+						<ReactQueryProvider>
+							<ConvexProvider>
+								<header className="flex justify-between items-center p-4 h-16 sticky top-0 bg-background z-10">
+									<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
+										<Image src={GLOBALS.thiings("/onigiri.png")} alt="Macro Tracker" width={34} height={34} priority />
+										<span className={cn("text-xl text-muted-foreground hover:text-foreground transition-all", SFProRoundedSemibold.className)}>Onigiri</span>
+									</Link>
 
-								<div className="flex items-center gap-4">
-									<ThemeDropdown />
+									<div className="flex items-center gap-4">
+										<ThemeDropdown />
 
-									<AuthButtons />
-								</div>
-							</header>
+										<AuthButtons />
+									</div>
+								</header>
 
-							{children}
-						</ConvexProvider>
+								{children}
+							</ConvexProvider>
+						</ReactQueryProvider>
 					</ThemeProvider>
 				</body>
 			</html>

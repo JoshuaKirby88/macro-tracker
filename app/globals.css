@@ -112,6 +112,53 @@
 	--sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
+:root {
+	--mono: hsl(0 0 100);
+	--mono-50: hsl(0 0 98);
+	--mono-100: hsl(0 0 96);
+	--mono-200: hsl(0 0 90);
+	--mono-300: hsl(0 0 84);
+	--mono-400: hsl(0 0 70);
+	--mono-500: hsl(0 0 55);
+	--mono-600: hsl(0 0 40);
+	--mono-700: hsl(0 0 26);
+	--mono-800: hsl(0 0 14);
+	--mono-900: hsl(0 0 6);
+	--mono-950: hsl(0 0 2);
+	--mono-1000: hsl(0 0 0);
+}
+
+.dark {
+	--mono: hsl(0 0 0);
+	--mono-100: hsl(0 0 10);
+	--mono-200: hsl(0 0 15);
+	--mono-300: hsl(0 0 20);
+	--mono-400: hsl(0 0 30);
+	--mono-500: hsl(0 0 50);
+	--mono-600: hsl(0 0 60);
+	--mono-700: hsl(0 0 70);
+	--mono-800: hsl(0 0 90);
+	--mono-900: hsl(0 0 90);
+	--mono-950: hsl(0 0 95);
+	--mono-1000: hsl(0 0 100);
+}
+
+@theme inline {
+	--color-mono: var(--mono);
+	--color-mono-50: var(--mono-50);
+	--color-mono-100: var(--mono-100);
+	--color-mono-200: var(--mono-200);
+	--color-mono-300: var(--mono-300);
+	--color-mono-400: var(--mono-400);
+	--color-mono-500: var(--mono-500);
+	--color-mono-600: var(--mono-600);
+	--color-mono-700: var(--mono-700);
+	--color-mono-800: var(--mono-800);
+	--color-mono-900: var(--mono-900);
+	--color-mono-950: var(--mono-950);
+	--color-mono-1000: var(--mono-1000);
+}
+
 @layer base {
 	* {
 		@apply border-border outline-ring/50;
@@ -119,4 +166,13 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+.lucide:not([class*="size-"]) {
+	height: 16px;
+	width: 16px;
+}
+
+.lucide:not([class*="stroke-"]) {
+	stroke-width: 3;
 }

@@ -2,6 +2,7 @@
 
 import { useMutation } from "convex/react"
 import * as React from "react"
+import { ImagePicker } from "@/components/image-picker"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
@@ -32,6 +33,7 @@ const Page = () => {
 	const [quantity, setQuantity] = React.useState("1")
 	const [mealType, setMealType] = React.useState("")
 	const [note, setNote] = React.useState("")
+	const [image, setImage] = React.useState("onigiri.png")
 
 	// Touched flags for validation display
 	const [touchedName, setTouchedName] = React.useState(false)
@@ -95,6 +97,7 @@ const Page = () => {
 		try {
 			const foodId = await createFood({
 				name: name.trim(),
+				image: image.trim(),
 				brand: brand.trim() ? brand.trim() : undefined,
 				description: description.trim() ? description.trim() : undefined,
 				servingSize: toRequiredNumber(servingSize),
@@ -120,8 +123,8 @@ const Page = () => {
 			} else {
 				setMessage("Food created")
 			}
-		} catch (err: any) {
-			setMessage(err?.message ?? "Something went wrong")
+		} catch (err: unknown) {
+			setMessage(err instanceof Error ? err.message : "Something went wrong")
 		} finally {
 			setIsSubmitting(false)
 		}
@@ -135,9 +138,9 @@ const Page = () => {
 			</CardHeader>
 			<form onSubmit={handleSubmit}>
 				<CardContent className="grid gap-4">
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<div className="grid gap-1">
-							<label htmlFor="name" className="text-sm text-muted-foreground">
+							<label htmlFor="name" className="text-muted-foreground text-sm">
 								Name
 							</label>
 							<input
@@ -148,18 +151,18 @@ const Page = () => {
 								onBlur={() => setTouchedName(true)}
 								aria-invalid={touchedName && Boolean(nameError)}
 								aria-describedby={touchedName && nameError ? "name-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., Greek yogurt"
 							/>
 							{touchedName && nameError ? (
-								<em id="name-error" className="text-xs text-destructive">
+								<em id="name-error" className="text-destructive text-xs">
 									{nameError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="brand" className="text-sm text-muted-foreground">
+							<label htmlFor="brand" className="text-muted-foreground text-sm">
 								Brand (optional)
 							</label>
 							<input
@@ -167,13 +170,13 @@ const Page = () => {
 								name="brand"
 								value={brand}
 								onChange={(e) => setBrand(e.target.value)}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., Fage"
 							/>
 						</div>
 
 						<div className="grid gap-1 sm:col-span-2">
-							<label htmlFor="description" className="text-sm text-muted-foreground">
+							<label htmlFor="description" className="text-muted-foreground text-sm">
 								Description (optional)
 							</label>
 							<input
@@ -181,15 +184,22 @@ const Page = () => {
 								name="description"
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 2% plain"
 							/>
 						</div>
+						<div className="grid gap-1 sm:col-span-2">
+							<label htmlFor="image" className="text-muted-foreground text-sm">
+								Image
+							</label>
+							<ImagePicker value={image} onChange={setImage} />
+							<div className="text-muted-foreground text-xs">Selected: {image}</div>
+						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 						<div className="grid gap-1">
-							<label htmlFor="servingSize" className="text-sm text-muted-foreground">
+							<label htmlFor="servingSize" className="text-muted-foreground text-sm">
 								Serving size
 							</label>
 							<input
@@ -203,18 +213,18 @@ const Page = () => {
 								onBlur={() => setTouchedServingSize(true)}
 								aria-invalid={touchedServingSize && Boolean(servingSizeError)}
 								aria-describedby={touchedServingSize && servingSizeError ? "servingSize-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 100"
 							/>
 							{touchedServingSize && servingSizeError ? (
-								<em id="servingSize-error" className="text-xs text-destructive">
+								<em id="servingSize-error" className="text-destructive text-xs">
 									{servingSizeError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="servingUnit" className="text-sm text-muted-foreground">
+							<label htmlFor="servingUnit" className="text-muted-foreground text-sm">
 								Unit
 							</label>
 							<input
@@ -225,20 +235,20 @@ const Page = () => {
 								onBlur={() => setTouchedServingUnit(true)}
 								aria-invalid={touchedServingUnit && Boolean(servingUnitError)}
 								aria-describedby={touchedServingUnit && servingUnitError ? "servingUnit-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., g, ml, piece"
 							/>
 							{touchedServingUnit && servingUnitError ? (
-								<em id="servingUnit-error" className="text-xs text-destructive">
+								<em id="servingUnit-error" className="text-destructive text-xs">
 									{servingUnitError}
 								</em>
 							) : null}
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 						<div className="grid gap-1">
-							<label htmlFor="calories" className="text-sm text-muted-foreground">
+							<label htmlFor="calories" className="text-muted-foreground text-sm">
 								Calories
 							</label>
 							<input
@@ -252,18 +262,18 @@ const Page = () => {
 								onBlur={() => setTouchedCalories(true)}
 								aria-invalid={touchedCalories && Boolean(caloriesError)}
 								aria-describedby={touchedCalories && caloriesError ? "calories-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 59"
 							/>
 							{touchedCalories && caloriesError ? (
-								<em id="calories-error" className="text-xs text-destructive">
+								<em id="calories-error" className="text-destructive text-xs">
 									{caloriesError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="protein" className="text-sm text-muted-foreground">
+							<label htmlFor="protein" className="text-muted-foreground text-sm">
 								Protein (g)
 							</label>
 							<input
@@ -277,18 +287,18 @@ const Page = () => {
 								onBlur={() => setTouchedProtein(true)}
 								aria-invalid={touchedProtein && Boolean(proteinError)}
 								aria-describedby={touchedProtein && proteinError ? "protein-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 10.3"
 							/>
 							{touchedProtein && proteinError ? (
-								<em id="protein-error" className="text-xs text-destructive">
+								<em id="protein-error" className="text-destructive text-xs">
 									{proteinError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="fat" className="text-sm text-muted-foreground">
+							<label htmlFor="fat" className="text-muted-foreground text-sm">
 								Fat (g)
 							</label>
 							<input
@@ -302,18 +312,18 @@ const Page = () => {
 								onBlur={() => setTouchedFat(true)}
 								aria-invalid={touchedFat && Boolean(fatError)}
 								aria-describedby={touchedFat && fatError ? "fat-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 2.3"
 							/>
 							{touchedFat && fatError ? (
-								<em id="fat-error" className="text-xs text-destructive">
+								<em id="fat-error" className="text-destructive text-xs">
 									{fatError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="carbs" className="text-sm text-muted-foreground">
+							<label htmlFor="carbs" className="text-muted-foreground text-sm">
 								Carbs (g)
 							</label>
 							<input
@@ -327,18 +337,18 @@ const Page = () => {
 								onBlur={() => setTouchedCarbs(true)}
 								aria-invalid={touchedCarbs && Boolean(carbsError)}
 								aria-describedby={touchedCarbs && carbsError ? "carbs-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 3.6"
 							/>
 							{touchedCarbs && carbsError ? (
-								<em id="carbs-error" className="text-xs text-destructive">
+								<em id="carbs-error" className="text-destructive text-xs">
 									{carbsError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="sugar" className="text-sm text-muted-foreground">
+							<label htmlFor="sugar" className="text-muted-foreground text-sm">
 								Sugar (g)
 							</label>
 							<input
@@ -352,18 +362,18 @@ const Page = () => {
 								onBlur={() => setTouchedSugar(true)}
 								aria-invalid={touchedSugar && Boolean(sugarError)}
 								aria-describedby={touchedSugar && sugarError ? "sugar-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 3.2"
 							/>
 							{touchedSugar && sugarError ? (
-								<em id="sugar-error" className="text-xs text-destructive">
+								<em id="sugar-error" className="text-destructive text-xs">
 									{sugarError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="fiber" className="text-sm text-muted-foreground">
+							<label htmlFor="fiber" className="text-muted-foreground text-sm">
 								Fiber (g) — optional
 							</label>
 							<input
@@ -377,20 +387,20 @@ const Page = () => {
 								onBlur={() => setTouchedFiber(true)}
 								aria-invalid={touchedFiber && Boolean(fiberError)}
 								aria-describedby={touchedFiber && fiberError ? "fiber-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 0.0"
 							/>
 							{touchedFiber && fiberError ? (
-								<em id="fiber-error" className="text-xs text-destructive">
+								<em id="fiber-error" className="text-destructive text-xs">
 									{fiberError}
 								</em>
 							) : null}
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 						<div className="grid gap-1">
-							<label htmlFor="quantity" className="text-sm text-muted-foreground">
+							<label htmlFor="quantity" className="text-muted-foreground text-sm">
 								Add now? Quantity
 							</label>
 							<input
@@ -404,18 +414,18 @@ const Page = () => {
 								onBlur={() => setTouchedQuantity(true)}
 								aria-invalid={touchedQuantity && Boolean(quantityError)}
 								aria-describedby={touchedQuantity && quantityError ? "quantity-error" : undefined}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., 1"
 							/>
 							{touchedQuantity && quantityError ? (
-								<em id="quantity-error" className="text-xs text-destructive">
+								<em id="quantity-error" className="text-destructive text-xs">
 									{quantityError}
 								</em>
 							) : null}
 						</div>
 
 						<div className="grid gap-1">
-							<label htmlFor="mealType" className="text-sm text-muted-foreground">
+							<label htmlFor="mealType" className="text-muted-foreground text-sm">
 								Meal (optional)
 							</label>
 							<select
@@ -423,7 +433,7 @@ const Page = () => {
 								name="mealType"
 								value={mealType}
 								onChange={(e) => setMealType(e.target.value)}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 							>
 								<option value="">Select meal…</option>
 								<option value="breakfast">Breakfast</option>
@@ -433,7 +443,7 @@ const Page = () => {
 						</div>
 
 						<div className="grid gap-1 sm:col-span-1">
-							<label htmlFor="note" className="text-sm text-muted-foreground">
+							<label htmlFor="note" className="text-muted-foreground text-sm">
 								Note (optional)
 							</label>
 							<input
@@ -441,20 +451,33 @@ const Page = () => {
 								name="note"
 								value={note}
 								onChange={(e) => setNote(e.target.value)}
-								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
+								className="h-10 w-full rounded-md border bg-background px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
 								placeholder="e.g., with berries"
 							/>
 						</div>
 					</div>
 
-					{message ? <div className="text-sm text-muted-foreground">{message}</div> : null}
+					{message ? <div className="text-muted-foreground text-sm">{message}</div> : null}
 				</CardContent>
 
 				<CardFooter className="justify-end gap-2">
-					<Button variant="outline" type="submit" disabled={!canSubmit} onClick={() => (submitModeRef.current = "create")}>
+					<Button
+						variant="outline"
+						type="submit"
+						disabled={!canSubmit}
+						onClick={() => {
+							submitModeRef.current = "create"
+						}}
+					>
 						{isSubmitting ? "Creating…" : "Create food"}
 					</Button>
-					<Button type="submit" disabled={!canSubmit} onClick={() => (submitModeRef.current = "createAdd")}>
+					<Button
+						type="submit"
+						disabled={!canSubmit}
+						onClick={() => {
+							submitModeRef.current = "createAdd"
+						}}
+					>
 						{isSubmitting ? "Creating…" : "Create & Add to Today"}
 					</Button>
 				</CardFooter>

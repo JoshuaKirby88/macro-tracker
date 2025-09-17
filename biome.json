@@ -28,6 +28,13 @@
 					"level": "info",
 					"fix": "safe"
 				}
+			},
+			"nursery": {
+				"useSortedClasses": {
+					"options": {},
+					"fix": "safe",
+					"level": "info"
+				}
 			}
 		},
 		"domains": {

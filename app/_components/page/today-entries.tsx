@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
 import { dateUtil } from "@/utils/date-util"
@@ -46,7 +47,8 @@ export const TodayEntries = () => {
 										const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)!
 
 										return (
-											<div key={entry._id} className="flex items-start justify-between rounded-md border p-3">
+											<div key={entry._id} className="flex items-center gap-5 rounded-md border p-3">
+												<Image src={`https://thiings.joshuakirby.webcam/${food.image}`} width={50} height={50} alt="Food Image" />
 												<div className="min-w-0">
 													<div className="truncate font-medium">
 														{food.name}
@@ -56,7 +58,7 @@ export const TodayEntries = () => {
 														{food.servingSize} × {entry.quantity}
 													</div>
 												</div>
-												<div className="shrink-0 text-right">
+												<div className="shrink-0 text-right ml-auto">
 													<div className="font-mono text-sm font-semibold">{Math.round(food.calories * entry.quantity)} kcal</div>
 													<div className="text-[10px] text-muted-foreground">
 														{Math.round(food.protein * entry.quantity)}g P · {Math.round(food.carbs * entry.quantity)}g C · {Math.round(food.fat * entry.quantity)}g F
