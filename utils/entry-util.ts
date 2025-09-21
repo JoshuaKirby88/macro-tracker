@@ -1,7 +1,5 @@
 import type { Entry, Food } from "@/convex/schema"
 
-export type EntryMealType = (typeof entryUtil.mealTypes)[number]
-
 export const entryUtil = {
 	mealTypes: ["breakfast", "lunch", "dinner"] as const,
 	getTotals(input: { entries: Entry[]; foods: Food[] }) {
@@ -19,5 +17,11 @@ export const entryUtil = {
 		}
 
 		return totals
+	},
+	getMealType(date: Date): Entry["mealType"] {
+		const hour = date.getHours()
+		if (hour < 11) return "breakfast"
+		if (hour < 16) return "lunch"
+		return "dinner"
 	},
 }

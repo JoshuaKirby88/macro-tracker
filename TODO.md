@@ -5,5 +5,4 @@
 - [ ] Analytics: PostHog
 - [ ] Create food dataset
 - [ ] Attribute thiings
-- [ ] Auto-fill meal based on time
 - [ ] Set food in food adder to newly created food on redirect

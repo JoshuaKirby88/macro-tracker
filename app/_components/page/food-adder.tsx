@@ -24,7 +24,7 @@ const config = {
 
 export const FoodAdder = () => {
 	const createEntry = useMutation(api.entries.create)
-	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: "breakfast", quantity: 1 } })
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), quantity: 1 } })
 	const selectedFoodId = form.watch("foodId")
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
