@@ -20,9 +20,10 @@ export const foodSchema = z.object({
 	fiber: z.number(),
 	createdAt: z.number(),
 	updatedAt: z.number(),
+	touchedAt: z.number(),
 })
-export const createFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true })
-export const updateFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true })
+export const createFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true, touchedAt: true })
+export const updateFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true, touchedAt: true })
 
 export type Entry = Pretty<z.infer<typeof entrySchema> & { _id: DataModel["entry"]["document"]["_id"] }>
 export const entrySchema = z.object({

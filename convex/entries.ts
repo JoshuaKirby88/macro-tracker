@@ -22,6 +22,8 @@ export const create = mutation({
 			...args,
 		})
 
+		await ctx.db.patch(food._id, { touchedAt: now })
+
 		return entryId
 	},
 })
@@ -67,6 +69,10 @@ export const update = mutation({
 			note: args.note,
 			updatedAt: now,
 		})
+
+		if (existing.foodId !== args.foodId) {
+			await ctx.db.patch(args.foodId, { touchedAt: now })
+		}
 	},
 })
 

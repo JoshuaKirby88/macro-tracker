@@ -26,6 +26,7 @@ export const create = mutation({
 			fiber: args.fiber,
 			createdAt: now,
 			updatedAt: now,
+			touchedAt: now,
 		})
 	},
 })

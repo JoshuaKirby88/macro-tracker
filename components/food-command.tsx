@@ -12,6 +12,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 	const [isOpen, setIsOpen] = React.useState(false)
 	const foods = useQuery(api.foods.forUser, {})
 	const selectedFood = foods?.find((f) => f._id === props.foodId)
+	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
 
 	React.useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -47,7 +48,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 				<CommandList>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup>
-						{foods?.map((food) => (
+						{sortedFoods.map((food) => (
 							<CommandItem
 								key={food._id}
 								value={`${food.name} ${food.brand}`}
