@@ -60,18 +60,24 @@ export const FoodAdder = () => {
 
 					<div className="grid gap-1">
 						<span className="text-muted-foreground text-sm">Meal</span>
-						<Select {...form.register("mealType")}>
-							<SelectTrigger className="w-full capitalize">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{entryUtil.mealTypes.map((mealType) => (
-									<SelectItem key={mealType} value={mealType} className="capitalize">
-										{mealType}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
+						<Controller
+							control={form.control}
+							name="mealType"
+							render={({ field }) => (
+								<Select value={field.value} onValueChange={field.onChange}>
+									<SelectTrigger className="w-full capitalize">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										{entryUtil.mealTypes.map((mealType) => (
+											<SelectItem key={mealType} value={mealType} className="capitalize">
+												{mealType}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							)}
+						/>
 					</div>
 
 					<Button type="submit" isLoading={form.formState.isSubmitting}>
