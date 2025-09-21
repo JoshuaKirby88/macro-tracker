@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { PenIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -13,7 +15,7 @@ import { Card } from "@/components/shadcn/card"
 import { Input } from "@/components/shadcn/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
-import { createEntrySchema } from "@/convex/schema"
+import { createEntrySchema, type Food } from "@/convex/schema"
 import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { toastFormError } from "@/utils/form/toast-form-error"
@@ -24,8 +26,20 @@ const config = {
 
 export const FoodAdder = () => {
 	const createEntry = useMutation(api.entries.create)
+
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), quantity: 1 } })
 	const selectedFoodId = form.watch("foodId")
+	const searchParams = useSearchParams()
+
+	useEffect(() => {
+		const newFoodId = searchParams?.get("newFoodId")
+		if (newFoodId && !form.getValues("foodId")) {
+			form.setValue("foodId", newFoodId as Food["_id"])
+			if (typeof window !== "undefined") {
+				window.history.replaceState(null, "", window.location.pathname)
+			}
+		}
+	}, [searchParams])
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {

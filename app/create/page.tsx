@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
+import { useRouter } from "next/navigation"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -37,13 +38,16 @@ const config = {
 }
 
 const Page = () => {
+	const router = useRouter()
 	const createFood = useMutation(api.foods.create)
-	const form = useForm({ resolver: zodResolver(createFoodSchema), defaultValues: { image: config.defaults.image } })
+	const form = useForm({ resolver: zodResolver(createFoodSchema), defaultValues: { image: config.defaults.image, fiber: 0, sugar: 0 } })
+	const name = form.watch("name")
 
 	const onSubmit = async (input: z.infer<typeof createFoodSchema>) => {
 		try {
-			await createFood(input)
+			const newFoodId = await createFood(input)
 			toast.success("Food created")
+			router.push(`/?newFoodId=${newFoodId}`)
 		} catch (error: unknown) {
 			toast.error(error instanceof Error ? error.message : "Something went wrong")
 		}
@@ -62,7 +66,7 @@ const Page = () => {
 						<Controller
 							name="image"
 							control={form.control}
-							render={({ field }) => <ImagePicker value={field.value} onChange={field.onChange} defaultQuery={config.defaults.imageQuery} />}
+							render={({ field }) => <ImagePicker value={field.value} onChange={field.onChange} defaultQuery={name ?? config.defaults.imageQuery} />}
 						/>
 
 						{config.fields.map((field) => (

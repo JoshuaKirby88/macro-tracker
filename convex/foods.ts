@@ -10,7 +10,7 @@ export const create = mutation({
 
 		const now = Date.now()
 
-		await ctx.db.insert("food", {
+		const newFoodId = await ctx.db.insert("food", {
 			userId: identity.subject,
 			name: args.name.trim(),
 			image: args.image.trim(),
@@ -28,6 +28,8 @@ export const create = mutation({
 			updatedAt: now,
 			touchedAt: now,
 		})
+
+		return newFoodId
 	},
 })
 
