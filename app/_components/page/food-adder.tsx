@@ -16,6 +16,7 @@ import { api } from "@/convex/_generated/api"
 import { createEntrySchema } from "@/convex/schema"
 import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
+import { toastFormError } from "@/utils/form/toast-form-error"
 
 const config = {
 	schema: createEntrySchema.omit({ entryDate: true }),
@@ -23,13 +24,14 @@ const config = {
 
 export const FoodAdder = () => {
 	const createEntry = useMutation(api.entries.create)
-	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: "breakfast" } })
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: "breakfast", quantity: 1 } })
 	const selectedFoodId = form.watch("foodId")
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
 			await createEntry({ ...input, entryDate: dateUtil.getDateString(new Date()) })
 			toast.success("Added to today's entries")
+			form.reset()
 		} catch (error: any) {
 			toast.error(error?.message ?? "Something went wrong")
 		}
@@ -37,7 +39,7 @@ export const FoodAdder = () => {
 
 	return (
 		<Card className="-translate-x-1/2 fixed bottom-10 left-1/2 w-[30rem] max-w-[95%] flex-row p-4">
-			<form onSubmit={form.handleSubmit(onSubmit)} className="grid w-full gap-3">
+			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
 				<div className="flex gap-4">
 					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
 
@@ -53,7 +55,7 @@ export const FoodAdder = () => {
 				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
 					<div className="grid gap-1">
 						<span className="text-muted-foreground text-sm">Quantity</span>
-						<Input {...form.register("quantity")} />
+						<Input {...form.register("quantity", { valueAsNumber: true })} />
 					</div>
 
 					<div className="grid gap-1">

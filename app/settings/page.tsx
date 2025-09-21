@@ -12,6 +12,7 @@ import { api } from "@/convex/_generated/api"
 import { createOrUpdateGoalSchema } from "@/convex/schema"
 import { capitalize } from "@/utils/capitalize"
 import { dateUtil } from "@/utils/date-util"
+import { toastFormError } from "@/utils/form/toast-form-error"
 
 const config = {
 	schema: createOrUpdateGoalSchema.omit({ startDate: true }),
@@ -39,7 +40,7 @@ const Page = () => {
 				<CardTitle>Daily macro goals</CardTitle>
 			</CardHeader>
 
-			<form onSubmit={form.handleSubmit(onSubmit)}>
+			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)}>
 				<CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 					{config.macros.map((macro) => (
 						<div key={macro} className="grid gap-1">

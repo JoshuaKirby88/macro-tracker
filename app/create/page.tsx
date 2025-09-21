@@ -12,6 +12,7 @@ import { Input } from "@/components/shadcn/input"
 import { api } from "@/convex/_generated/api"
 import { createFoodSchema, type Food } from "@/convex/schema"
 import { capitalize } from "@/utils/capitalize"
+import { toastFormError } from "@/utils/form/toast-form-error"
 
 type Field = { value: keyof Food; title?: string; isOptional?: boolean; isGram?: boolean; isNumber?: boolean }
 
@@ -55,7 +56,7 @@ const Page = () => {
 				<CardDescription>Add a custom food with serving and macros.</CardDescription>
 			</CardHeader>
 
-			<form onSubmit={form.handleSubmit(onSubmit)}>
+			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)}>
 				<CardContent className="grid gap-4">
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<Controller
@@ -69,7 +70,7 @@ const Page = () => {
 								<label htmlFor={field.value} className="text-muted-foreground text-sm">
 									{field.title ?? capitalize(field.value)} {field.isOptional ? "(optional)" : ""} {field.isGram ? "(g)" : ""}
 								</label>
-								<Input {...form.register(field.value)} />
+								<Input {...form.register(field.value, { valueAsNumber: field.isNumber })} />
 							</div>
 						))}
 					</div>
