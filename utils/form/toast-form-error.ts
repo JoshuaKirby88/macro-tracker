@@ -7,9 +7,9 @@ export const toastFormError = (errors: any) => {
 const getFirstMessage = (obj: any): string | undefined => {
 	if (!obj) return undefined
 	if (obj?.message) return obj.message as string
-	for (const v of Object.values(obj)) {
-		const m = typeof v === "object" ? getFirstMessage(v) : undefined
-		if (m) return m
+	for (const [key, value] of Object.entries(obj)) {
+		const m = typeof value === "object" ? getFirstMessage(value) : undefined
+		if (m) return `${key}: ${m}`
 	}
 	return undefined
 }
