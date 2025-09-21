@@ -16,7 +16,7 @@ import { Input } from "@/components/shadcn/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
 import { createEntrySchema, type Food } from "@/convex/schema"
-import { dateUtil } from "@/utils/date-util"
+import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { toastFormError } from "@/utils/form/toast-form-error"
 
@@ -25,11 +25,12 @@ const config = {
 }
 
 export const FoodAdder = () => {
+	const searchParams = useSearchParams()
+	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
 
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), quantity: 1 } })
 	const selectedFoodId = form.watch("foodId")
-	const searchParams = useSearchParams()
 
 	useEffect(() => {
 		const newFoodId = searchParams?.get("newFoodId")
@@ -43,7 +44,7 @@ export const FoodAdder = () => {
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
-			await createEntry({ ...input, entryDate: dateUtil.getDateString(new Date()) })
+			await createEntry({ ...input, entryDate: selectedDate })
 			toast.success("Added to today's entries")
 			form.reset()
 		} catch (error: any) {

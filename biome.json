@@ -38,6 +38,9 @@
 					"fix": "safe",
 					"level": "info"
 				}
+			},
+			"performance": {
+				"noAccumulatingSpread": "off"
 			}
 		},
 		"domains": {

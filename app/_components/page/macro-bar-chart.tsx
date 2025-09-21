@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shadcn/chart"
 import { api } from "@/convex/_generated/api"
-import { dateUtil } from "@/utils/date-util"
+import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 
 const chartConfig: ChartConfig = {
@@ -16,9 +16,9 @@ const chartConfig: ChartConfig = {
 }
 
 export const MacroBarChart = () => {
-	const today = dateUtil.getDateString(new Date())
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
-	const goal = useQuery(api.goals.forDate, { date: today })
+	const selectedDate = useDateString("selected")
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
+	const goal = useQuery(api.goals.forDate, { date: selectedDate })
 
 	if (!entriesWithFoods) {
 		return null

@@ -11,13 +11,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { api } from "@/convex/_generated/api"
 import type { Entry } from "@/convex/schema"
 import { cn } from "@/utils/cn"
-import { dateUtil } from "@/utils/date-util"
+import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { EditEntryDialog } from "./edit-entry-dialog"
 
 export const TodayEntries = () => {
-	const today = dateUtil.getDateString(new Date())
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
+	const selectedDate = useDateString("selected")
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
 	const removeEntry = useMutation(api.entries.remove)
 	const [editingEntryId, setEditingEntryId] = useState<Entry["_id"] | null>(null)
 

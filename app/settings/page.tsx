@@ -11,7 +11,7 @@ import { Input } from "@/components/shadcn/input"
 import { api } from "@/convex/_generated/api"
 import { createOrUpdateGoalSchema } from "@/convex/schema"
 import { capitalize } from "@/utils/capitalize"
-import { dateUtil } from "@/utils/date-util"
+import { useDateString } from "@/utils/date-util"
 import { toastFormError } from "@/utils/form/toast-form-error"
 
 const config = {
@@ -20,7 +20,7 @@ const config = {
 }
 
 const Page = () => {
-	const today = dateUtil.getDateString(new Date())
+	const today = useDateString("today")
 	const goal = useQuery(api.goals.forDate, { date: today })
 	const createOrUpdateGoal = useMutation(api.goals.createOrUpdate)
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: goal ?? undefined })
