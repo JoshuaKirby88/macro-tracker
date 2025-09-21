@@ -6,7 +6,7 @@ import { Input } from "@/components/shadcn/input"
 import { ImagePreview, ImagePreviewSkeleton } from "./image-preview"
 
 const config = {
-	topK: 30,
+	topK: 100,
 	minScore: 0.2,
 }
 
@@ -14,6 +14,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 	const [isOpen, setIsOpen] = useState(false)
 	const [query, setQuery] = React.useState(props.defaultQuery ?? "")
 	const [debouncedQuery, setDebouncedQuery] = React.useState(props.defaultQuery ?? "")
+	const resultsRef = React.useRef<HTMLDivElement>(null)
 
 	React.useEffect(() => {
 		const t = setTimeout(() => setDebouncedQuery(query.trim()), 300)
@@ -23,7 +24,11 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["image-search", debouncedQuery],
 		enabled: debouncedQuery.length > 0,
-		queryFn: async () => searchThiingsAction({ query: debouncedQuery, topK: config.topK, minScore: config.minScore }),
+		queryFn: async () => {
+			const result = await searchThiingsAction({ query: debouncedQuery, topK: config.topK, minScore: config.minScore })
+			if (resultsRef.current) resultsRef.current.scrollTop = 0
+			return result
+		},
 	})
 
 	return (
@@ -39,7 +44,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 
 				<Input placeholder="Search images…" value={query} onChange={(e) => setQuery(e.target.value)} />
 
-				<div className="mt-4 flex-1 overflow-auto">
+				<div ref={resultsRef} className="mt-4 flex-1 overflow-auto">
 					{isError ? <div className="text-destructive text-sm">Something went wrong. Try again.</div> : null}
 
 					<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
