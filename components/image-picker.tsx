@@ -30,7 +30,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["image-search", debouncedQuery],
-		enabled: debouncedQuery.length > 0,
+		enabled: isOpen && debouncedQuery.length > 0,
 		queryFn: async () => {
 			const result = await searchThiingsAction({ query: debouncedQuery, topK: config.topK, minScore: config.minScore })
 			if (resultsRef.current) resultsRef.current.scrollTop = 0

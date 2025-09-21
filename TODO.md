@@ -7,4 +7,3 @@
 - [ ] Attribute thiings
 - [ ] Auto-fill meal based on time
 - [ ] Set food in food adder to newly created food on redirect
-- [ ] Fix foods/page fetching images for each image picker
