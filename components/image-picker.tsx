@@ -47,6 +47,12 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 			<DialogContent className="flex size-[50rem] max-h-[90%] max-w-[95%] flex-col">
 				<DialogHeader>
 					<DialogTitle>Choose Image</DialogTitle>
+					<p className="text-muted-foreground text-xs">
+						Images from{" "}
+						<a href="https://www.thiings.co/things" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+							thiings
+						</a>
+					</p>
 				</DialogHeader>
 
 				<Input placeholder="Search images…" value={query} onChange={(e) => setQuery(e.target.value)} />
