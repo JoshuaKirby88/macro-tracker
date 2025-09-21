@@ -36,6 +36,7 @@ export const entrySchema = z.object({
 	updatedAt: z.number(),
 })
 export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
+export const updateEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
 
 export type Goal = Pretty<z.infer<typeof goalSchema> & { _id: DataModel["goal"]["document"]["_id"] }>
 export const goalSchema = z.object({

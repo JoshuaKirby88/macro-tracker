@@ -21,6 +21,13 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 		return () => clearTimeout(t)
 	}, [query])
 
+	React.useEffect(() => {
+		if (isOpen && props.defaultQuery) {
+			setQuery(props.defaultQuery)
+			setDebouncedQuery(props.defaultQuery)
+		}
+	}, [isOpen])
+
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["image-search", debouncedQuery],
 		enabled: debouncedQuery.length > 0,

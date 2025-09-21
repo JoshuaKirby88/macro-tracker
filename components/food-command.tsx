@@ -1,5 +1,3 @@
-"use client"
-
 import { useQuery } from "convex/react"
 import { SearchIcon } from "lucide-react"
 import Image from "next/image"

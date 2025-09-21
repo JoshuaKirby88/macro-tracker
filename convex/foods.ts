@@ -1,6 +1,6 @@
 import { zid, zodOutputToConvex } from "convex-helpers/server/zod"
 import { mutation, query } from "./_generated/server"
-import { createFoodSchema } from "./schema"
+import { createFoodSchema, updateFoodSchema } from "./schema"
 
 export const create = mutation({
 	args: zodOutputToConvex(createFoodSchema),
@@ -45,11 +45,7 @@ export const forUser = query({
 })
 
 export const update = mutation({
-	args: zodOutputToConvex(
-		createFoodSchema.extend({
-			id: zid("food"),
-		}),
-	),
+	args: zodOutputToConvex(updateFoodSchema.extend({ id: zid("food") })),
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) throw new Error("Not authenticated")
