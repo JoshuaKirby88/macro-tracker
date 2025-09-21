@@ -29,7 +29,8 @@
 					"options": {},
 					"level": "info",
 					"fix": "safe"
-				}
+				},
+				"useExhaustiveDependencies": "info"
 			},
 			"nursery": {
 				"useSortedClasses": {

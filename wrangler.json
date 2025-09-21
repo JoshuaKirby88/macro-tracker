@@ -2,7 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": ".open-next/worker.js",
 	"name": "macro-tracker",
-	"compatibility_date": "2025-09-15",
+	"compatibility_date": "2024-11-15",
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"minify": true,
 	"observability": {
@@ -11,6 +11,16 @@
 		}
 	},
 	"keep_names": false,
+	"routes": [
+		{
+			"pattern": "macros.joshuakirby.webcam",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.macros.joshuakirby.webcam",
+			"custom_domain": true
+		}
+	],
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
@@ -27,5 +37,10 @@
 			"index_name": "thiings",
 			"remote": true
 		}
-	]
+	],
+	"vars": {
+		"NEXT_PUBLIC_CONVEX_URL": "https://efficient-husky-367.convex.cloud",
+		"NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsubWFjcm9zLmpvc2h1YWtpcmJ5LndlYmNhbSQ",
+		"NEXT_PUBLIC_CLERK_SIGN_IN_URL": "/sign-in"
+	}
 }

@@ -21,8 +21,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.62.0(react@19.1.0))
       '@opennextjs/cloudflare':
-        specifier: ^1.8.2
-        version: 1.8.2(wrangler@4.38.0)
+        specifier: ^1.8.3
+        version: 1.8.3(wrangler@4.38.0)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.8
         version: 0.13.8(typescript@5.9.2)(zod@4.1.9)
@@ -47,6 +47,9 @@ importers:
       convex-helpers:
         specifier: ^0.1.104
         version: 0.1.104(@standard-schema/spec@1.0.0)(convex@1.27.1(@clerk/clerk-react@5.47.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(zod@4.1.9)
+      dotenv-cli:
+        specifier: ^10.0.0
+        version: 10.0.0
       lucide-react:
         specifier: ^0.544.0
         version: 0.544.0(react@19.1.0)
@@ -1146,12 +1149,12 @@ packages:
     resolution: {integrity: sha512-csY4qcR7jUwiZmkreNTJhcypQfts2aY2CK+a+rXgXUImZiZiySh0FvwHjRnlqWKvg+y6ae9lHFzDRjBTmqlTIQ==}
     engines: {node: '>=16.0.0'}
 
-  '@opennextjs/aws@3.7.6':
-    resolution: {integrity: sha512-l4UGkmaZaAjWER+PuZ/zNziMnrbf6oA9B1RUDKcyKsX+hEES1b7h6kLgpo4a4maf01M+k0yJUZQyF4sf+vI+Iw==}
+  '@opennextjs/aws@3.7.7':
+    resolution: {integrity: sha512-rkBpNfBsq3XvbBh+VcNI9dvs0UkuuJH5I7SvVdPx12LudiErShL/9RoA7iF9tpkfRizcwGRIhsedrHKmcs9kqw==}
     hasBin: true
 
-  '@opennextjs/cloudflare@1.8.2':
-    resolution: {integrity: sha512-Og2UvU1EEkQuxK7b+FlJU0zoJKQTIAw85bHo/JGEkXK0hA4MABkb/deuido785yXd91JQU7ayGB3Ql9Cs6jwSQ==}
+  '@opennextjs/cloudflare@1.8.3':
+    resolution: {integrity: sha512-ftyZwi2Mh6gtUE2HuHfYfQ/GsJ0vkS5KrPmFEd3beBSCvDRUURDR0o3qSdF3DqS5WJIEloWwgkjxyFed3Mp12w==}
     hasBin: true
     peerDependencies:
       wrangler: ^4.24.4
@@ -2717,8 +2720,20 @@ packages:
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
+  dotenv-cli@10.0.0:
+    resolution: {integrity: sha512-lnOnttzfrzkRx2echxJHQRB6vOAMSCzzZg79IxpC00tU42wZPuZkQxNNrrwVAxaQZIIh001l4PxVlCrBxngBzA==}
+    hasBin: true
+
+  dotenv-expand@11.0.7:
+    resolution: {integrity: sha512-zIHwmZPRshsCdpMDyVsqGmgyP0yT8GAgXUnkdAoJisxvf33k7yO6OuoKmcTGuXPWSsm8Oh88nZicRLA9Y0rUeA==}
+    engines: {node: '>=12'}
+
   dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
+
+  dotenv@17.2.2:
+    resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
     engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
@@ -3164,6 +3179,9 @@ packages:
   minimatch@8.0.4:
     resolution: {integrity: sha512-W0Wvr9HyFXZRGIDgCicunpQ299OKXs9RgZfaukz4qAW/pJhcpUfupc9c+OObPOFueNy8VSrZgEmDtk6Kh4WzDA==}
     engines: {node: '>=16 || 14 >=14.17'}
+
+  minimist@1.2.8:
+    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
   minipass@4.2.8:
     resolution: {integrity: sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==}
@@ -5329,7 +5347,7 @@ snapshots:
     dependencies:
       gzip-size: 6.0.0
 
-  '@opennextjs/aws@3.7.6':
+  '@opennextjs/aws@3.7.7':
     dependencies:
       '@ast-grep/napi': 0.35.0
       '@aws-sdk/client-cloudfront': 3.398.0
@@ -5352,10 +5370,10 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.8.2(wrangler@4.38.0)':
+  '@opennextjs/cloudflare@1.8.3(wrangler@4.38.0)':
     dependencies:
       '@dotenvx/dotenvx': 1.31.0
-      '@opennextjs/aws': 3.7.6
+      '@opennextjs/aws': 3.7.7
       cloudflare: 4.5.0
       enquirer: 2.4.1
       glob: 11.0.3
@@ -7104,7 +7122,20 @@ snapshots:
       '@babel/runtime': 7.28.4
       csstype: 3.1.3
 
+  dotenv-cli@10.0.0:
+    dependencies:
+      cross-spawn: 7.0.6
+      dotenv: 17.2.2
+      dotenv-expand: 11.0.7
+      minimist: 1.2.8
+
+  dotenv-expand@11.0.7:
+    dependencies:
+      dotenv: 16.6.1
+
   dotenv@16.6.1: {}
+
+  dotenv@17.2.2: {}
 
   dunder-proto@1.0.1:
     dependencies:
@@ -7545,6 +7576,8 @@ snapshots:
   minimatch@8.0.4:
     dependencies:
       brace-expansion: 2.0.2
+
+  minimist@1.2.8: {}
 
   minipass@4.2.8: {}
 
