@@ -2,7 +2,7 @@
 
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import { FoodForm } from "./food-form"
+import { FoodForm } from "./_components/food-form"
 
 const Page = () => {
 	const foods = useQuery(api.foods.forUser, {})
