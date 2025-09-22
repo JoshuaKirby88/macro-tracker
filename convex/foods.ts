@@ -1,4 +1,5 @@
 import { zid, zodOutputToConvex } from "convex-helpers/server/zod"
+import z from "zod/v3"
 import { mutation, query } from "./_generated/server"
 import { createFoodSchema, updateFoodSchema } from "./schema"
 
@@ -44,6 +45,18 @@ export const forUser = query({
 			.collect()
 
 		return foods
+	},
+})
+
+export const byId = query({
+	args: zodOutputToConvex(z.object({ id: zid("food") })),
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity()
+		if (!identity) return null
+
+		const food = await ctx.db.get(args.id)
+		if (!food || food.userId !== identity.subject) return null
+		return food
 	},
 })
 
