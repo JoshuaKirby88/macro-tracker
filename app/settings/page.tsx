@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "convex/react"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -25,6 +26,10 @@ const Page = () => {
 	const createOrUpdateGoal = useMutation(api.goals.createOrUpdate)
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: goal ?? undefined })
 
+	useEffect(() => {
+		if (goal) form.reset(goal)
+	}, [goal, form])
+
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
 			await createOrUpdateGoal({ ...input, startDate: today })
@@ -47,7 +52,7 @@ const Page = () => {
 							<label htmlFor={macro} className="text-muted-foreground text-sm">
 								{capitalize(macro)}
 							</label>
-							<Input type="number" {...form.register(macro)} />
+							<Input {...form.register(macro, { valueAsNumber: true })} />
 						</div>
 					))}
 				</CardContent>
