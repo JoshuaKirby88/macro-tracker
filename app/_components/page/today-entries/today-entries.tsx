@@ -3,11 +3,12 @@
 import { useMutation, useQuery } from "convex/react"
 import { MoreVertical } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/shadcn/dropdown-menu"
 import { api } from "@/convex/_generated/api"
 import type { Entry } from "@/convex/schema"
 import { cn } from "@/utils/cn"
@@ -99,6 +100,12 @@ export const TodayEntries = () => {
 													>
 														Delete
 													</DropdownMenuItem>
+
+													<DropdownMenuSeparator />
+
+													<Link href={`/foods/${food._id}`}>
+														<DropdownMenuItem>Edit Food</DropdownMenuItem>
+													</Link>
 												</DropdownMenuContent>
 											</DropdownMenu>
 										</div>
