@@ -34,11 +34,11 @@ export const MacroBarChart = () => {
 	] as const
 
 	const gramMaxConsumed = Math.max(...series.filter((s) => s.id !== "calories").map((s) => s.consumed)) || 1
-	const hasAnyGoal = series.some((s) => s.goal > 0)
 	const data = series.map((m) => ({
 		...m,
-		percent: Math.min(150, (m.goal > 0 ? m.consumed / m.goal : m.id === "calories" ? 1 : m.consumed / gramMaxConsumed) * 100),
+		percent: (m.goal > 0 ? m.consumed / m.goal : m.id === "calories" ? 1 : m.consumed / gramMaxConsumed) * 100,
 	}))
+	const yMax = Math.max(100, ...data.map((d) => d.percent))
 
 	return (
 		<Card>
@@ -51,7 +51,7 @@ export const MacroBarChart = () => {
 					<BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
 						<CartesianGrid vertical={false} strokeDasharray="3 3" />
 						<XAxis dataKey="label" tickLine={false} axisLine={false} />
-						<YAxis unit="%" domain={hasAnyGoal ? [0, 150] : [0, 100]} tickLine={false} axisLine={false} />
+						<YAxis unit="%" domain={[0, yMax]} tickLine={false} axisLine={false} />
 						<ChartTooltip
 							cursor={{ fill: "hsl(var(--muted))", opacity: 0.25 }}
 							content={
