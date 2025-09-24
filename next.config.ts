@@ -11,6 +11,11 @@ export default {
 			},
 		],
 	},
+	experimental: {
+		serverActions: {
+			bodySizeLimit: "50mb",
+		},
+	},
 } satisfies NextConfig
 
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare"

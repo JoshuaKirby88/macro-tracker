@@ -34,6 +34,7 @@ const Page = () => {
 					placeholder="Search foods by name or brand..."
 					className="w-full rounded-md border px-3 py-2 text-sm"
 					aria-label="Search foods"
+					autoFocus
 				/>
 			</div>
 

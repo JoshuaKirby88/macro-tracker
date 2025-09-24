@@ -10,10 +10,10 @@ const config = {
 	minScore: 0.2,
 }
 
-export const ImagePicker = (props: { value: string; onChange: (value: string) => void; defaultQuery?: string }) => {
+export const ImagePicker = (props: { value: string; onChange: (value: string) => void; getDefaultQueryOnOpen: () => string }) => {
 	const [isOpen, setIsOpen] = useState(false)
-	const [query, setQuery] = React.useState(props.defaultQuery ?? "")
-	const [debouncedQuery, setDebouncedQuery] = React.useState(props.defaultQuery ?? "")
+	const [query, setQuery] = React.useState(props.getDefaultQueryOnOpen())
+	const [debouncedQuery, setDebouncedQuery] = React.useState(props.getDefaultQueryOnOpen())
 	const resultsRef = React.useRef<HTMLDivElement>(null)
 
 	React.useEffect(() => {
@@ -22,9 +22,10 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 	}, [query])
 
 	React.useEffect(() => {
-		if (isOpen && props.defaultQuery) {
-			setQuery(props.defaultQuery)
-			setDebouncedQuery(props.defaultQuery)
+		const defaultQuery = props.getDefaultQueryOnOpen()
+		if (isOpen && defaultQuery) {
+			setQuery(defaultQuery)
+			setDebouncedQuery(defaultQuery)
 		}
 	}, [isOpen])
 

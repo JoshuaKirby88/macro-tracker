@@ -69,7 +69,7 @@ export const FoodForm = (props: { food: Food }) => {
 						<Controller
 							name="image"
 							control={form.control}
-							render={({ field }) => <ImagePicker value={field.value as string} onChange={field.onChange} defaultQuery={props.food.name} />}
+							render={({ field }) => <ImagePicker value={field.value as string} onChange={field.onChange} getDefaultQueryOnOpen={() => props.food.name} />}
 						/>
 
 						{config.fields.map((field) => (

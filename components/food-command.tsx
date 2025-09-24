@@ -51,7 +51,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 						{sortedFoods.map((food) => (
 							<CommandItem
 								key={food._id}
-								value={`${food.name} ${food.brand}`}
+								value={food._id}
 								className="py-0"
 								onSelect={() => {
 									props.onChange(food._id)

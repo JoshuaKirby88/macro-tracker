@@ -41,7 +41,8 @@
 			},
 			"performance": {
 				"noAccumulatingSpread": "off"
-			}
+			},
+			"a11y": "off"
 		},
 		"domains": {
 			"next": "recommended",

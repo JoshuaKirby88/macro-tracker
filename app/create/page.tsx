@@ -3,19 +3,21 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
-import { Controller, useForm } from "react-hook-form"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
-import { ImagePicker } from "@/components/image-picker"
+import { analyzeFoodImageAction } from "@/actions/food/analyze-food-image-action"
+import { CreateFoodFields } from "@/app/create/_components/create-food-fields"
+import { FullscreenDropOverlay } from "@/app/create/_components/fullscreen-drop-overlay"
+import { ImagePreviewOverlay } from "@/app/create/_components/image-preview-overlay"
+import { UploadActions } from "@/app/create/_components/upload-actions"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
-import { Input } from "@/components/shadcn/input"
 import { api } from "@/convex/_generated/api"
-import { createFoodSchema, type Food } from "@/convex/schema"
-import { capitalize } from "@/utils/capitalize"
+import { createFoodSchema } from "@/convex/schema"
+import { useFileUpload } from "@/hooks/use-file-upload"
 import { toastFormError } from "@/utils/form/toast-form-error"
-
-type Field = { value: keyof Food; title?: string; isOptional?: boolean; isGram?: boolean; isNumber?: boolean }
 
 const config = {
 	fields: [
@@ -30,7 +32,7 @@ const config = {
 		{ value: "carbs", isNumber: true, isGram: true },
 		{ value: "fiber", isNumber: true, isGram: true },
 		{ value: "sugar", isNumber: true, isGram: true },
-	] satisfies Field[],
+	] satisfies React.ComponentProps<typeof CreateFoodFields>["fields"],
 	defaults: {
 		image: "onigiri.png",
 		imageQuery: "Onigiri",
@@ -41,7 +43,40 @@ const Page = () => {
 	const router = useRouter()
 	const createFood = useMutation(api.foods.create)
 	const form = useForm({ resolver: zodResolver(createFoodSchema), defaultValues: { image: config.defaults.image, fiber: 0, sugar: 0 } })
-	const name = form.watch("name")
+	const [isScanning, setIsScanning] = useState(false)
+
+	const [{ files, isDragging }, { openFileDialog, getInputProps, handleDragEnter, handleDragLeave, handleDragOver, handleDrop }] = useFileUpload({
+		accept: "image/*",
+		onFilesAdded: async (addedFiles) => {
+			setIsScanning(true)
+			try {
+				const first = addedFiles[0]?.file
+				if (!(first instanceof File)) return
+				const base64 = await new Promise<string>((resolve, reject) => {
+					const reader = new FileReader()
+					reader.onload = () => resolve(reader.result as string)
+					reader.onerror = () => reject(new Error("Failed to read image"))
+					reader.readAsDataURL(first)
+				})
+				const result = await analyzeFoodImageAction({ imageBase64: base64 })
+				const entries = Object.entries(result.fields)
+				if (entries.length === 0) {
+					toast.error("No nutrition data detected from image")
+					return
+				}
+				for (const [k, v] of entries) {
+					form.setValue(k as any, v as any)
+				}
+				setIsScanning(false)
+				toast.success("Extracted nutrition from image")
+			} catch (e) {
+				const msg = e instanceof Error ? e.message : "Image analysis failed"
+				toast.error(msg)
+			}
+		},
+	})
+
+	const inputProps = getInputProps({ accept: "image/*", multiple: false })
 
 	const onSubmit = async (input: z.infer<typeof createFoodSchema>) => {
 		try {
@@ -54,39 +89,33 @@ const Page = () => {
 	}
 
 	return (
-		<Card className="mx-auto w-[50rem] max-w-[95%]">
-			<CardHeader>
-				<CardTitle>Create food</CardTitle>
-				<CardDescription>Add a custom food with serving and macros.</CardDescription>
-			</CardHeader>
+		<div className="relative" onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}>
+			<ImagePreviewOverlay previewUrl={files[0]?.preview} isOpen={isScanning} setIsOpen={() => setIsScanning(false)} />
 
-			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)}>
-				<CardContent className="grid gap-4">
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-						<Controller
-							name="image"
-							control={form.control}
-							render={({ field }) => <ImagePicker value={field.value} onChange={field.onChange} defaultQuery={name ?? config.defaults.imageQuery} />}
-						/>
+			<FullscreenDropOverlay isDragging={isDragging} dragHandlers={{ onDragEnter: handleDragEnter, onDragLeave: handleDragLeave, onDragOver: handleDragOver, onDrop: handleDrop }} />
 
-						{config.fields.map((field) => (
-							<div key={field.value} className="grid gap-1">
-								<label htmlFor={field.value} className="text-muted-foreground text-sm">
-									{field.title ?? capitalize(field.value)} {field.isOptional ? "(optional)" : ""} {field.isGram ? "(g)" : ""}
-								</label>
-								<Input {...form.register(field.value, { valueAsNumber: field.isNumber })} />
-							</div>
-						))}
+			<Card className="mx-auto w-[50rem] max-w-[95%]">
+				<CardHeader className="flex flex-row items-start justify-between gap-4">
+					<div>
+						<CardTitle>Create food</CardTitle>
+						<CardDescription>Add a custom food with serving and macros.</CardDescription>
 					</div>
-				</CardContent>
+					<UploadActions inputProps={inputProps} onClickUpload={openFileDialog} />
+				</CardHeader>
 
-				<CardFooter className="justify-end gap-2">
-					<Button type="submit" isLoading={form.formState.isSubmitting}>
-						{form.formState.isSubmitting ? "Creating…" : "Create food"}
-					</Button>
-				</CardFooter>
-			</form>
-		</Card>
+				<form onSubmit={form.handleSubmit(onSubmit, toastFormError)}>
+					<CardContent className="grid gap-4">
+						<CreateFoodFields control={form.control} register={form.register} fields={config.fields} getDefaultQueryOnOpen={() => form.getValues("name") ?? config.defaults.imageQuery} />
+					</CardContent>
+
+					<CardFooter className="justify-end gap-2">
+						<Button type="submit" isLoading={form.formState.isSubmitting}>
+							{form.formState.isSubmitting ? "Creating…" : "Create food"}
+						</Button>
+					</CardFooter>
+				</form>
+			</Card>
+		</div>
 	)
 }
 
