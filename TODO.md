@@ -1,8 +1,8 @@
 # Do
 
 - [x] Make bar chart out of 100%
+- [x] Add favicon and title to macros
 - [ ] SSR for convex data
-- [ ] Add favicon and title to macros
 - [ ] Fix image scanning animation
 - [ ] Control what bars to show
 - [ ] Show numbers in large overlayed over bars
@@ -11,6 +11,8 @@
 - [ ] Add search and extraction for common foods
 - [ ] Create food dataset
 - [ ] Make today entries scrollable using carousel on mobile, showing each meal in full width
+- [ ] Add edit food to entry dropdown
+- [ ] Compress all images to webp
 
 # Image -> Macros
 
