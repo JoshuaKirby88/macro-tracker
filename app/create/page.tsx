@@ -71,7 +71,7 @@ const Page = () => {
 	}
 
 	const [{ files, isDragging }, { openFileDialog, getInputProps, handleDragEnter, handleDragLeave, handleDragOver, handleDrop }] = useFileUpload({
-		accept: "image/*",
+		accept: "image/jpeg,image/png,image/webp,image/gif",
 		multiple: true,
 		onFilesAdded: async (addedFiles) => {
 			setIsScanning(true)
@@ -79,8 +79,16 @@ const Page = () => {
 				const fileList = addedFiles.map((f) => f.file).filter((f): f is File => f instanceof File)
 				if (fileList.length === 0) return
 
+				const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
+				const supportedFiles = fileList.filter((file) => allowedTypes.has(file.type) || /\.(jpe?g|png|webp|gif)$/i.test(file.name))
+				const unsupportedCount = fileList.length - supportedFiles.length
+				if (unsupportedCount > 0) {
+					toast.error(`Ignored ${unsupportedCount} unsupported image${unsupportedCount > 1 ? "s" : ""}. Please upload JPEG, PNG, WEBP, or GIF.`)
+				}
+				if (supportedFiles.length === 0) return
+
 				const base64s = await Promise.all(
-					fileList.map(
+					supportedFiles.map(
 						(file) =>
 							new Promise<string>((resolve, reject) => {
 								const reader = new FileReader()
@@ -110,7 +118,7 @@ const Page = () => {
 		},
 	})
 
-	const inputProps = getInputProps({ accept: "image/*", multiple: true })
+	const inputProps = getInputProps({ accept: "image/jpeg,image/png,image/webp,image/gif", multiple: true })
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
@@ -161,6 +169,7 @@ const Page = () => {
 							</PopoverTrigger>
 							<PopoverContent align="end" className="w-80">
 								<div className="space-y-3">
+									<h3 className="font-medium">Multiplier</h3>
 									<p className="text-muted-foreground text-sm">Enter a number to multiply all numeric fields currently filled in this form.</p>
 									<Input type="number" step="any" value={multiplier} onChange={handleMultiplierChange} />
 								</div>

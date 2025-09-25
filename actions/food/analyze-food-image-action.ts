@@ -5,6 +5,20 @@ import { createFoodSchema } from "@/convex/schema"
 import { ai } from "@/utils/ai"
 
 export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) => {
+	const SUPPORTED_MIME = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
+	const validImages = (input.imageBase64s ?? []).filter((s) => {
+		if (!s) return false
+		// Allow remote HTTP(S) images too
+		if (/^https?:\/\//i.test(s)) return true
+		const match = /^data:([^;]+);base64,/i.exec(s)
+		if (!match) return false
+		const mime = match[1].toLowerCase()
+		return SUPPORTED_MIME.has(mime)
+	})
+
+	if (validImages.length === 0) {
+		throw new Error("No supported images found. Please upload JPEG, PNG, WEBP, or GIF.")
+	}
 	const { object } = await ai.getObject({
 		model: openai("gpt-5-nano"),
 		schema: createFoodSchema.partial(),
@@ -25,7 +39,7 @@ export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) 
 							"- If serving size is present, include both servingSize (number) and servingUnit (string), e.g. 1 and 'cup', or 30 and 'g'.",
 						].join("\n"),
 					},
-					...input.imageBase64s.map((image) => ({ type: "image" as const, image })),
+					...validImages.map((image) => ({ type: "image" as const, image })),
 				],
 			},
 		],
