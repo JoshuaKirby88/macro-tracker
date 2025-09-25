@@ -12,7 +12,7 @@ export const ai = {
 
 		return completion.embedding
 	},
-	getObject<T extends z.ZodTypeAny>(...args: Parameters<typeof generateObject<T>>) {
-		return generateObject(...args)
+	getObject<T extends z.ZodTypeAny>(input: Parameters<typeof generateObject<T>>[0]) {
+		return generateObject(input)
 	},
 }

@@ -33,9 +33,15 @@
 	],
 	"vectorize": [
 		{
-			"binding": "THIINGS_VECTOR",
+			"binding": "THIINGS_VECTORIZE",
 			"index_name": "thiings",
 			"remote": true
+		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "thiings",
+			"binding": "THIINGS_R2"
 		}
 	],
 	"vars": {

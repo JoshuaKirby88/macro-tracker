@@ -39,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 							<ConvexProvider>
 								<header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-background p-4">
 									<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
-										<Image src={GLOBALS.thiings("/onigiri.png")} alt="Macro Tracker" width={34} height={34} priority />
+										<Image src={GLOBALS.thiings("/onigiri")} alt="Macro Tracker" width={34} height={34} priority />
 										<span className={cn("text-muted-foreground text-xl transition-all hover:text-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
 									</Link>
 

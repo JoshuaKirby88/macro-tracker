@@ -38,7 +38,7 @@ const config = {
 		{ value: "sugar", isNumber: true, isGram: true },
 	] satisfies React.ComponentProps<typeof CreateFoodFields>["fields"],
 	defaults: {
-		image: "onigiri.png",
+		image: "onigiri",
 		imageQuery: "Onigiri",
 	},
 }
