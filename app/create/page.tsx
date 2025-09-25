@@ -52,22 +52,31 @@ const Page = () => {
 	const numericFieldKeys = config.fields.filter((f) => (f as any).isNumber).map((f) => f.value as string)
 	const [multiplier, setMultiplier] = useState<number>(1)
 
-	const multiplyFormValues = (factor: number) => {
-		if (!Number.isFinite(factor)) return
+	const handleMultiplierChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const newMultiplierValue = parseFloat(e.target.value)
+		const targetMultiplier = Number.isFinite(newMultiplierValue) ? newMultiplierValue : 1
+
+		if (multiplier === targetMultiplier) return
+
+		if (multiplier === 0) {
+			setMultiplier(targetMultiplier)
+			return
+		}
+
 		for (const key of numericFieldKeys) {
 			const currentVal = form.getValues(key as any)
 			const num = Number(currentVal)
 			if (!Number.isFinite(num)) continue
-			form.setValue(key as any, (num * factor) as any, { shouldDirty: true })
-		}
-	}
 
-	const handleMultiplierChange = (e: any) => {
-		const val = parseFloat(e.target.value)
-		setMultiplier(Number.isFinite(val) ? val : 1)
-		if (Number.isFinite(val)) {
-			multiplyFormValues(val)
+			const baseValue = num / multiplier
+			const newValue = baseValue * targetMultiplier
+
+			const roundedValue = Number(newValue.toPrecision(12))
+
+			form.setValue(key as any, roundedValue, { shouldDirty: true })
 		}
+
+		setMultiplier(targetMultiplier)
 	}
 
 	const [{ files, isDragging }, { openFileDialog, getInputProps, handleDragEnter, handleDragLeave, handleDragOver, handleDrop }] = useFileUpload({
