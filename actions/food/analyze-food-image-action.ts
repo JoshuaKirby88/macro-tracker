@@ -4,7 +4,7 @@ import { openai } from "@ai-sdk/openai"
 import { createFoodSchema } from "@/convex/schema"
 import { ai } from "@/utils/ai"
 
-export const analyzeFoodImageAction = async (input: { imageBase64: string }) => {
+export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) => {
 	const { object } = await ai.getObject({
 		model: openai("gpt-5-nano"),
 		schema: createFoodSchema.partial(),
@@ -25,7 +25,7 @@ export const analyzeFoodImageAction = async (input: { imageBase64: string }) => 
 							"- If serving size is present, include both servingSize (number) and servingUnit (string), e.g. 1 and 'cup', or 30 and 'g'.",
 						].join("\n"),
 					},
-					{ type: "image", image: input.imageBase64 },
+					...input.imageBase64s.map((image) => ({ type: "image" as const, image })),
 				],
 			},
 		],

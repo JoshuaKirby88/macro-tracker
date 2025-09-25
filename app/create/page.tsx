@@ -20,6 +20,7 @@ import { useFileUpload } from "@/hooks/use-file-upload"
 import { toastFormError } from "@/utils/form/toast-form-error"
 
 const config = {
+	schema: createFoodSchema.partial().merge(createFoodSchema.pick({ name: true, image: true, servingSize: true, servingUnit: true })),
 	fields: [
 		{ value: "name" },
 		{ value: "brand", isOptional: true },
@@ -42,45 +43,64 @@ const config = {
 const Page = () => {
 	const router = useRouter()
 	const createFood = useMutation(api.foods.create)
-	const form = useForm({ resolver: zodResolver(createFoodSchema), defaultValues: { image: config.defaults.image, fiber: 0, sugar: 0 } })
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { image: config.defaults.image } })
 	const [isScanning, setIsScanning] = useState(false)
 
 	const [{ files, isDragging }, { openFileDialog, getInputProps, handleDragEnter, handleDragLeave, handleDragOver, handleDrop }] = useFileUpload({
 		accept: "image/*",
+		multiple: true,
 		onFilesAdded: async (addedFiles) => {
 			setIsScanning(true)
 			try {
-				const first = addedFiles[0]?.file
-				if (!(first instanceof File)) return
-				const base64 = await new Promise<string>((resolve, reject) => {
-					const reader = new FileReader()
-					reader.onload = () => resolve(reader.result as string)
-					reader.onerror = () => reject(new Error("Failed to read image"))
-					reader.readAsDataURL(first)
-				})
-				const result = await analyzeFoodImageAction({ imageBase64: base64 })
+				const fileList = addedFiles.map((f) => f.file).filter((f): f is File => f instanceof File)
+				if (fileList.length === 0) return
+
+				const base64s = await Promise.all(
+					fileList.map(
+						(file) =>
+							new Promise<string>((resolve, reject) => {
+								const reader = new FileReader()
+								reader.onload = () => resolve(reader.result as string)
+								reader.onerror = () => reject(new Error("Failed to read image"))
+								reader.readAsDataURL(file)
+							}),
+					),
+				)
+
+				const result = await analyzeFoodImageAction({ imageBase64s: base64s })
 				const entries = Object.entries(result.fields)
 				if (entries.length === 0) {
-					toast.error("No nutrition data detected from image")
+					toast.error("No nutrition data detected from images")
 					return
 				}
 				for (const [k, v] of entries) {
 					form.setValue(k as any, v as any)
 				}
-				setIsScanning(false)
-				toast.success("Extracted nutrition from image")
+				toast.success(`Extracted nutrition from ${base64s.length} image${base64s.length > 1 ? "s" : ""}`)
 			} catch (e) {
 				const msg = e instanceof Error ? e.message : "Image analysis failed"
 				toast.error(msg)
+			} finally {
+				setIsScanning(false)
 			}
 		},
 	})
 
-	const inputProps = getInputProps({ accept: "image/*", multiple: false })
+	const inputProps = getInputProps({ accept: "image/*", multiple: true })
 
-	const onSubmit = async (input: z.infer<typeof createFoodSchema>) => {
+	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
-			const newFoodId = await createFood(input)
+			const newFoodId = await createFood({
+				...input,
+				brand: input.brand ?? "",
+				description: input.description ?? "",
+				calories: input.calories ?? 0,
+				protein: input.protein ?? 0,
+				fat: input.fat ?? 0,
+				carbs: input.carbs ?? 0,
+				sugar: input.sugar ?? 0,
+				fiber: input.fiber ?? 0,
+			})
 			toast.success("Food created")
 			router.push(`/?newFoodId=${newFoodId}`)
 		} catch (error: unknown) {
