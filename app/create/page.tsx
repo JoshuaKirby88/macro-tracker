@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
+import { XIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -14,6 +15,8 @@ import { ImagePreviewOverlay } from "@/app/create/_components/image-preview-over
 import { UploadActions } from "@/app/create/_components/upload-actions"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/shadcn/card"
+import { Input } from "@/components/shadcn/input"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/shadcn/popover"
 import { api } from "@/convex/_generated/api"
 import { createFoodSchema } from "@/convex/schema"
 import { useFileUpload } from "@/hooks/use-file-upload"
@@ -45,6 +48,27 @@ const Page = () => {
 	const createFood = useMutation(api.foods.create)
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { image: config.defaults.image } })
 	const [isScanning, setIsScanning] = useState(false)
+
+	const numericFieldKeys = config.fields.filter((f) => (f as any).isNumber).map((f) => f.value as string)
+	const [multiplier, setMultiplier] = useState<number>(1)
+
+	const multiplyFormValues = (factor: number) => {
+		if (!Number.isFinite(factor)) return
+		for (const key of numericFieldKeys) {
+			const currentVal = form.getValues(key as any)
+			const num = Number(currentVal)
+			if (!Number.isFinite(num)) continue
+			form.setValue(key as any, (num * factor) as any, { shouldDirty: true })
+		}
+	}
+
+	const handleMultiplierChange = (e: any) => {
+		const val = parseFloat(e.target.value)
+		setMultiplier(Number.isFinite(val) ? val : 1)
+		if (Number.isFinite(val)) {
+			multiplyFormValues(val)
+		}
+	}
 
 	const [{ files, isDragging }, { openFileDialog, getInputProps, handleDragEnter, handleDragLeave, handleDragOver, handleDrop }] = useFileUpload({
 		accept: "image/*",
@@ -114,7 +138,7 @@ const Page = () => {
 
 			<FullscreenDropOverlay isDragging={isDragging} dragHandlers={{ onDragEnter: handleDragEnter, onDragLeave: handleDragLeave, onDragOver: handleDragOver, onDrop: handleDrop }} />
 
-			<Card className="mx-auto w-[50rem] max-w-[95%]">
+			<Card className="relative mx-auto w-[50rem] max-w-[95%]">
 				<CardHeader className="flex flex-row items-start justify-between gap-4">
 					<div>
 						<CardTitle>Create food</CardTitle>
@@ -128,7 +152,21 @@ const Page = () => {
 						<CreateFoodFields control={form.control} register={form.register} fields={config.fields} getDefaultQueryOnOpen={() => form.getValues("name") ?? config.defaults.imageQuery} />
 					</CardContent>
 
-					<CardFooter className="justify-end gap-2">
+					<CardFooter className="mt-10 justify-between gap-2">
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button variant="outline" size="icon" className="rounded-full">
+									<XIcon className="size-4 stroke-3" />
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent align="end" className="w-80">
+								<div className="space-y-3">
+									<p className="text-muted-foreground text-sm">Enter a number to multiply all numeric fields currently filled in this form.</p>
+									<Input type="number" step="any" value={multiplier} onChange={handleMultiplierChange} />
+								</div>
+							</PopoverContent>
+						</Popover>
+
 						<Button type="submit" isLoading={form.formState.isSubmitting}>
 							{form.formState.isSubmitting ? "Creating…" : "Create food"}
 						</Button>
