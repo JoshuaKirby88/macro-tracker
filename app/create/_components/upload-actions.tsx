@@ -12,7 +12,7 @@ export const UploadActions = ({ inputProps, onClickUpload }: UploadActionsProps)
 		<div className="flex items-center gap-2">
 			<input {...inputProps} className="sr-only" aria-label="Upload image file" tabIndex={-1} />
 			<Button variant="secondary" type="button" onClick={onClickUpload}>
-				<Upload className="mr-2 size-4" /> Upload image
+				<Upload className="mr-2" /> Upload image
 			</Button>
 		</div>
 	)

@@ -40,9 +40,9 @@ function Calendar({ className, classNames, showOutsideDays = true, components: u
 	const defaultComponents = {
 		Chevron: (props: { className?: string; size?: number; disabled?: boolean; orientation?: "left" | "right" | "up" | "down" }) => {
 			if (props.orientation === "left") {
-				return <ChevronLeftIcon {...props} className={cn("size-4", props.className)} aria-hidden="true" />
+				return <ChevronLeftIcon {...props} className={cn("", props.className)} aria-hidden="true" />
 			}
-			return <ChevronRightIcon {...props} className={cn("size-4", props.className)} aria-hidden="true" />
+			return <ChevronRightIcon {...props} className={cn("", props.className)} aria-hidden="true" />
 		},
 	}
 

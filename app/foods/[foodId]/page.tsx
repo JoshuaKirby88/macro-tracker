@@ -18,7 +18,7 @@ const Page = () => {
 		<div className="mx-auto w-[50rem] max-w-[95%] p-4">
 			<div className="mb-4 flex items-center gap-2">
 				<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })} aria-label="Back to foods">
-					<ChevronLeftIcon className="size-4" />
+					<ChevronLeftIcon />
 				</Link>
 				<h1 className="font-semibold text-2xl">Edit food</h1>
 			</div>

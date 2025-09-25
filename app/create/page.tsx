@@ -156,7 +156,7 @@ const Page = () => {
 						<Popover>
 							<PopoverTrigger asChild>
 								<Button variant="outline" size="icon" className="rounded-full">
-									<XIcon className="size-4 stroke-3" />
+									<XIcon className="stroke-3" />
 								</Button>
 							</PopoverTrigger>
 							<PopoverContent align="end" className="w-80">
