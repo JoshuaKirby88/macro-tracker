@@ -1,6 +1,6 @@
 "use client"
 
-import { useMutation, useQuery } from "convex/react"
+import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react"
 import { MoreVertical } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -12,13 +12,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { api } from "@/convex/_generated/api"
 import type { Entry } from "@/convex/schema"
 import { cn } from "@/utils/cn"
-import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { EditEntryDialog } from "./edit-entry-dialog"
 
-export const TodayEntries = () => {
-	const selectedDate = useDateString("selected")
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
+export const TodayEntries = (props: { preloadedEntries: Preloaded<typeof api.entries.withFoodsForDate> }) => {
+	const entriesWithFoods = usePreloadedQuery(props.preloadedEntries)
 	const removeEntry = useMutation(api.entries.remove)
 	const [editingEntryId, setEditingEntryId] = useState<Entry["_id"] | null>(null)
 

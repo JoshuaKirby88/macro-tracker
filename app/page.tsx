@@ -1,4 +1,7 @@
+import { preloadQuery } from "convex/nextjs"
 import { Suspense } from "react"
+import { api } from "@/convex/_generated/api"
+import { dateUtil } from "@/utils/date-util"
 import { FoodAdder } from "./_components/page/food-adder"
 import { MacroBarChart } from "./_components/page/macro-bar-chart"
 import { SelectedDateController } from "./_components/page/selected-date-controller"
@@ -13,7 +16,12 @@ const Page = () => {
 
 			<MacroBarChart />
 
-			<TodayEntries />
+			<Suspense>
+				{(async () => {
+					const preloadedEntries = await preloadQuery(api.entries.withFoodsForDate, { date: dateUtil.getDateString(new Date()) })
+					return <TodayEntries preloadedEntries={preloadedEntries} />
+				})()}
+			</Suspense>
 
 			<Suspense>
 				<FoodAdder />

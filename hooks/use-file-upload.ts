@@ -1,5 +1,3 @@
-"use client"
-
 import { type ChangeEvent, type DragEvent, type InputHTMLAttributes, useCallback, useRef, useState } from "react"
 
 export type FileMetadata = {
