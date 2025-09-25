@@ -14,7 +14,14 @@ const Page = () => {
 				<SelectedDateController />
 			</div>
 
-			<MacroBarChart />
+			<Suspense>
+				{(async () => {
+					const date = dateUtil.getDateString(new Date())
+					const preloadedEntries = await preloadQuery(api.entries.withFoodsForDate, { date })
+					const preloadedGoal = await preloadQuery(api.goals.forDate, { date })
+					return <MacroBarChart preloadedEntries={preloadedEntries} preloadedGoal={preloadedGoal} />
+				})()}
+			</Suspense>
 
 			<Suspense>
 				{(async () => {
@@ -24,7 +31,10 @@ const Page = () => {
 			</Suspense>
 
 			<Suspense>
-				<FoodAdder />
+				{(async () => {
+					const preloadedFoods = await preloadQuery(api.foods.forUser, {})
+					return <FoodAdder preloadedFoods={preloadedFoods} />
+				})()}
 			</Suspense>
 		</div>
 	)

@@ -1,18 +1,16 @@
-"use client"
-
-import { useQuery } from "convex/react"
+import { preloadQuery } from "convex/nextjs"
 import { ChevronLeftIcon } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { Suspense } from "react"
 import { buttonVariants } from "@/components/shadcn/button"
 import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
-import { FoodForm } from "./_components/food-form"
+import { FoodDetails } from "./_components/food-details"
 
-const Page = () => {
-	const params = useParams<{ foodId: string }>()
+const Page = async (props: { params: Promise<{ foodId: string }> }) => {
+	const params = await props.params
 	const id = params.foodId as Food["_id"]
-	const food = useQuery(api.foods.byId, id ? { id } : "skip")
+	const preloadedFood = await preloadQuery(api.foods.byId, { id })
 
 	return (
 		<div className="mx-auto w-[50rem] max-w-[95%] p-4">
@@ -22,7 +20,10 @@ const Page = () => {
 				</Link>
 				<h1 className="font-semibold text-2xl">Edit food</h1>
 			</div>
-			{food === undefined ? <p className="text-muted-foreground">Loading…</p> : food === null ? <p className="text-destructive">Food not found.</p> : <FoodForm food={food} />}
+
+			<Suspense>
+				<FoodDetails preloadedFood={preloadedFood} />
+			</Suspense>
 		</div>
 	)
 }

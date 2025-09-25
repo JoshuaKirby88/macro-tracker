@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
+import { type Preloaded, useMutation } from "convex/react"
 import { PenIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -24,7 +24,7 @@ const config = {
 	schema: createEntrySchema.omit({ entryDate: true }),
 }
 
-export const FoodAdder = () => {
+export const FoodAdder = (props: { preloadedFoods: Preloaded<typeof api.foods.forUser> }) => {
 	const searchParams = useSearchParams()
 	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
@@ -56,7 +56,7 @@ export const FoodAdder = () => {
 		<Card className="-translate-x-1/2 fixed bottom-10 left-1/2 w-[30rem] max-w-[95%] flex-row p-4">
 			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
 				<div className="flex gap-4">
-					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
+					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} preloadedFoods={props.preloadedFoods} />} />
 
 					<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon", className: "ml-auto" })}>
 						<PenIcon />

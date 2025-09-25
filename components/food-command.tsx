@@ -1,16 +1,16 @@
-import { useQuery } from "convex/react"
+import { type Preloaded, usePreloadedQuery } from "convex/react"
 import { SearchIcon } from "lucide-react"
 import Image from "next/image"
 import * as React from "react"
 import { Button } from "@/components/shadcn/button"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/shadcn/command"
-import { api } from "@/convex/_generated/api"
+import type { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
 import { GLOBALS } from "@/utils/globals"
 
-export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void }) => {
+export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void; preloadedFoods: Preloaded<typeof api.foods.forUser> }) => {
 	const [isOpen, setIsOpen] = React.useState(false)
-	const foods = useQuery(api.foods.forUser, {})
+	const foods = usePreloadedQuery(props.preloadedFoods) ?? []
 	const selectedFood = foods?.find((f) => f._id === props.foodId)
 	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
 
