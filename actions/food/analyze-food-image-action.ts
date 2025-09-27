@@ -34,7 +34,7 @@ export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) 
 							"- Do NOT infer or guess missing values.",
 							"- Use numbers for all numeric values.",
 							"- Units:",
-							"  • calories: kcal",
+							"  • calories: Cal",
 							"  • protein/fat/carbs/fiber/sugar: grams (g)",
 							"- If serving size is present, include both servingSize (number) and servingUnit (string), e.g. 1 and 'cup', or 30 and 'g'.",
 						].join("\n"),

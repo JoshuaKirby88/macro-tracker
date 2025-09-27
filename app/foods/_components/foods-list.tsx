@@ -50,7 +50,7 @@ export const FoodsList = () => {
 									{food.brand ? ` (${food.brand})` : ""}
 								</div>
 								<div className="truncate text-muted-foreground text-sm">
-									{food.servingSize} {food.servingUnit} • {food.calories} kcal
+									{food.servingSize} {food.servingUnit} • {food.calories} Cal
 								</div>
 							</div>
 						</Link>
