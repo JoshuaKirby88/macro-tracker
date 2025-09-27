@@ -6,7 +6,7 @@ import { TodayEntries } from "./_components/page/today-entries/today-entries"
 
 const Page = () => {
 	return (
-		<div className="space-y-10 p-4">
+		<div className="space-y-10 p-4 pb-30">
 			<div className="flex items-center justify-end">
 				<SelectedDateController />
 			</div>
