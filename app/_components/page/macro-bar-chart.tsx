@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "convex/react"
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shadcn/chart"
 import { api } from "@/convex/_generated/api"
@@ -34,10 +34,11 @@ export const MacroBarChart = () => {
 	] as const
 
 	const gramMaxConsumed = Math.max(...series.filter((s) => s.id !== "calories").map((s) => s.consumed)) || 1
-	const data = series.map((m) => ({
-		...m,
-		percent: (m.goal > 0 ? m.consumed / m.goal : m.id === "calories" ? 1 : m.consumed / gramMaxConsumed) * 100,
-	}))
+	const data = series.map((m) => {
+		const percent = (m.goal > 0 ? m.consumed / m.goal : m.id === "calories" ? 1 : m.consumed / gramMaxConsumed) * 100
+		const valueLabel = `${m.consumed.toLocaleString()} ${m.id === "calories" ? "Cal" : "g"}`
+		return { ...m, percent, valueLabel }
+	})
 	const yMax = Math.max(100, ...data.map((d) => d.percent))
 
 	return (
@@ -82,6 +83,7 @@ export const MacroBarChart = () => {
 							{data.map((item) => (
 								<Cell key={item.id} fill={`var(--color-${item.id})`} />
 							))}
+							<LabelList dataKey="valueLabel" position="top" className="font-bold" />
 						</Bar>
 					</BarChart>
 				</ChartContainer>
