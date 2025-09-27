@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { type Preloaded, useMutation, usePreloadedQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -20,15 +20,11 @@ const config = {
 	macros: ["calories", "protein", "fat", "carbs"] as const,
 }
 
-export const SettingsForm = (props: { preloadedGoal: Preloaded<typeof api.goals.forDate> }) => {
+export const SettingsForm = () => {
 	const today = dateUtil.getDateString(new Date())
-	const goal = usePreloadedQuery(props.preloadedGoal)
+	const goal = useQuery(api.goals.forDate, { date: today })
 	const createOrUpdateGoal = useMutation(api.goals.createOrUpdate)
-
-	const form = useForm({
-		resolver: zodResolver(config.schema),
-		defaultValues: goal ?? undefined,
-	})
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: goal ?? undefined })
 
 	useEffect(() => {
 		if (goal) form.reset(goal)

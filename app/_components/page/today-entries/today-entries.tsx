@@ -1,16 +1,18 @@
 "use client"
 
-import { type Preloaded, usePreloadedQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
-import type { api } from "@/convex/_generated/api"
+import { api } from "@/convex/_generated/api"
 import { cn } from "@/utils/cn"
+import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { GLOBALS } from "@/utils/globals"
 import { EntryDropdown } from "./entry-dropdown"
 
-export const TodayEntries = (props: { preloadedEntries: Preloaded<typeof api.entries.withFoodsForDate> }) => {
-	const entriesWithFoods = usePreloadedQuery(props.preloadedEntries)
+export const TodayEntries = () => {
+	const today = dateUtil.getDateString(new Date())
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
 
 	if (!entriesWithFoods?.entries.length) {
 		return (

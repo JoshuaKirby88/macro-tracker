@@ -1,11 +1,11 @@
 "use client"
 
-import { type Preloaded, usePreloadedQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/shadcn/chart"
-import type { api } from "@/convex/_generated/api"
-
+import { api } from "@/convex/_generated/api"
+import { dateUtil } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 
 const chartConfig: ChartConfig = {
@@ -15,9 +15,10 @@ const chartConfig: ChartConfig = {
 	protein: { label: "Protein", color: "#ef4444" },
 }
 
-export const MacroBarChart = (props: { preloadedEntries: Preloaded<typeof api.entries.withFoodsForDate>; preloadedGoal: Preloaded<typeof api.goals.forDate> }) => {
-	const entriesWithFoods = usePreloadedQuery(props.preloadedEntries)
-	const goal = usePreloadedQuery(props.preloadedGoal)
+export const MacroBarChart = () => {
+	const today = dateUtil.getDateString(new Date())
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
+	const goal = useQuery(api.goals.forDate, { date: today })
 
 	if (!entriesWithFoods) {
 		return null

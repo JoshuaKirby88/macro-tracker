@@ -1,19 +1,16 @@
 "use client"
 
-import { type Preloaded, usePreloadedQuery } from "convex/react"
+import { useQuery } from "convex/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useMemo, useState } from "react"
-import type { api } from "@/convex/_generated/api"
+import { api } from "@/convex/_generated/api"
 import { GLOBALS } from "@/utils/globals"
 
-export const FoodsList = (props: { preloadedFoods: Preloaded<typeof api.foods.forUser> }) => {
-	const foods = usePreloadedQuery(props.preloadedFoods) ?? []
+export const FoodsList = () => {
+	const foods = useQuery(api.foods.forUser, {})
 	const [search, setSearch] = useState("")
-
-	const sorted = useMemo(() => {
-		return [...foods].sort((a, b) => a.name.localeCompare(b.name))
-	}, [foods])
+	const sorted = useMemo(() => [...(foods ?? [])].sort((a, b) => a.name.localeCompare(b.name)), [foods])
 
 	const filtered = useMemo(() => {
 		const query = search.trim().toLowerCase()
