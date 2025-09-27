@@ -47,7 +47,7 @@ export const MacroBarChart = () => {
 			</CardHeader>
 
 			<CardContent className="grid gap-3">
-				<ChartContainer config={chartConfig} className="h-[320px] w-full">
+				<ChartContainer config={chartConfig} className="aspect-auto h-[320px] w-full min-w-0">
 					<BarChart data={data} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
 						<CartesianGrid vertical={false} strokeDasharray="3 3" />
 						<XAxis dataKey="label" tickLine={false} axisLine={false} />
