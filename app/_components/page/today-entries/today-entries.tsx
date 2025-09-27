@@ -5,14 +5,14 @@ import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { api } from "@/convex/_generated/api"
 import { cn } from "@/utils/cn"
-import { dateUtil } from "@/utils/date-util"
+import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { GLOBALS } from "@/utils/globals"
 import { EntryDropdown } from "./entry-dropdown"
 
 export const TodayEntries = () => {
-	const today = dateUtil.getDateString(new Date())
-	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: today })
+	const selectedDate = useDateString("selected")
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
 
 	if (!entriesWithFoods?.entries.length) {
 		return (
