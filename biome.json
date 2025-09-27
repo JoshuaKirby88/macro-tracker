@@ -22,7 +22,8 @@
 			"suspicious": {
 				"noUnknownAtRules": "off",
 				"noExplicitAny": "off",
-				"noArrayIndexKey": "off"
+				"noArrayIndexKey": "off",
+				"noAssignInExpressions": "off"
 			},
 			"correctness": {
 				"noUnusedImports": {

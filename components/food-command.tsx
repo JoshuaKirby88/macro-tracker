@@ -13,6 +13,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 	const [isOpen, setIsOpen] = React.useState(false)
 	const selectedFood = foods?.find((f) => f._id === props.foodId)
 	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
+	const listRef = React.useRef<HTMLDivElement | null>(null)
 
 	React.useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -44,8 +45,8 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 			</Button>
 
 			<CommandDialog open={isOpen} onOpenChange={setIsOpen} className="w-[35rem]">
-				<CommandInput placeholder="Type to search foods…" />
-				<CommandList>
+				<CommandInput placeholder="Type to search foods…" onInput={() => (listRef.current!.scrollTop = 0)} />
+				<CommandList ref={listRef}>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup>
 						{sortedFoods.map((food) => (
