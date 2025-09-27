@@ -5,7 +5,7 @@
 - [x] Add edit food to entry dropdown
 - [x] Compress all images to webp
 - [x] Make today entries scrollable using carousel on mobile, showing each meal in full width
-- [ ] Macro summary per meal
+- [x] Macro summary per meal
 - [ ] Extract multipler into a component, and add it to edit food page
 - [ ] Control what bars to show
 - [ ] Show numbers in large overlayed over bars
