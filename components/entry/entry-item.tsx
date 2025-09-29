@@ -47,7 +47,7 @@ export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Par
 							</div>
 							<div className="mt-0.5 flex items-baseline justify-between">
 								<div className="space-x-2 text-muted-foreground text-xs">
-									{[!props.hideMealType && capitalize(props.entry.mealType), `${props.food.servingSize * props.entry.quantity} ${props.food.servingUnit}`]
+									{[!props.hideMealType && capitalize(props.entry.mealType), `${Math.round(props.food.servingSize * props.entry.quantity)} ${props.food.servingUnit}`]
 										.filter(Boolean)
 										.map((str, i) => (
 											<React.Fragment key={i}>

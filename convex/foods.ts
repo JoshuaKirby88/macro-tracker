@@ -72,12 +72,12 @@ export const update = mutation({
 		const now = Date.now()
 
 		await ctx.db.patch(args.id, {
-			name: args.name.trim(),
-			image: args.image.trim(),
+			name: args.name?.trim(),
+			image: args.image?.trim(),
 			brand: args.brand?.trim(),
 			description: args.description?.trim(),
 			servingSize: args.servingSize,
-			servingUnit: args.servingUnit.trim(),
+			servingUnit: args.servingUnit?.trim(),
 			calories: args.calories,
 			protein: args.protein,
 			fat: args.fat,

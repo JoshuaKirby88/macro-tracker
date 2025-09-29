@@ -23,7 +23,7 @@ export const foodSchema = z.object({
 	touchedAt: z.number(),
 })
 export const createFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true, touchedAt: true })
-export const updateFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true, touchedAt: true })
+export const updateFoodSchema = foodSchema.omit({ userId: true, createdAt: true, updatedAt: true, touchedAt: true }).partial()
 
 export type Entry = Pretty<z.infer<typeof entrySchema> & { _id: DataModel["entry"]["document"]["_id"] }>
 export const entrySchema = z.object({
