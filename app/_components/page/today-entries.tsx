@@ -1,12 +1,13 @@
 "use client"
 
 import { useQuery } from "convex/react"
+import { EntryItem } from "@/components/entry/entry-item"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/shadcn/carousel"
 import { api } from "@/convex/_generated/api"
+import { cn } from "@/utils/cn"
 import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
-import { EntryItem } from "./entry-item"
 
 export const TodayEntries = () => {
 	const selectedDate = useDateString("selected")
@@ -63,7 +64,7 @@ export const TodayEntries = () => {
 							)
 
 							return (
-								<CarouselItem key={mealType} className="space-y-3 lg:basis-1/3">
+								<CarouselItem key={mealType} className={cn("space-y-3", mealsWithEntries.length === 2 ? "lg:basis-1/2" : mealsWithEntries.length === 3 ? "lg:basis-1/3" : "")}>
 									<div className="flex items-baseline justify-between">
 										<div className="font-bold text-xs capitalize">{mealType}</div>
 										<div className="font-mono text-muted-foreground text-xs">
@@ -77,7 +78,7 @@ export const TodayEntries = () => {
 											const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
 											if (!food) return null
 
-											return <EntryItem key={entry._id} entry={entry} food={food} />
+											return <EntryItem key={entry._id} entry={entry} food={food} dropdownItems={{ edit: true, delete: true, viewFood: true }} hideMealType />
 										})}
 									</div>
 								</CarouselItem>

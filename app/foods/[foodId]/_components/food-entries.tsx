@@ -1,13 +1,11 @@
 import { useQuery } from "convex/react"
 import { format, parseISO } from "date-fns"
-import { useRouter } from "next/navigation"
 import React from "react"
+import EntryItem from "@/components/entry/entry-item"
 import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
-import { dateUtil } from "@/utils/date-util"
 
 export const FoodEntries = (props: { food: Food }) => {
-	const router = useRouter()
 	const entries = useQuery(api.entries.byFoodId, { foodId: props.food._id })
 	const dates = Array.from(new Set((entries ?? []).map((entry) => entry.entryDate))).sort((a, b) => b.localeCompare(a))
 
@@ -25,31 +23,7 @@ export const FoodEntries = (props: { food: Food }) => {
 							</li>
 
 							{filteredEntries?.map((entry) => (
-								<li
-									key={entry._id}
-									className="group cursor-pointer rounded-lg border p-4 transition-colors hover:bg-accent/50"
-									onClick={() => {
-										dateUtil.store.setState({ selectedDate: parseISO(date) })
-										router.push("/")
-									}}
-								>
-									<div className="flex items-center justify-between gap-4">
-										<div>
-											<p className="text-muted-foreground text-sm">{entry.mealType.slice(0, 1).toUpperCase() + entry.mealType.slice(1)}</p>
-											<p className="text-muted-foreground text-xs">
-												{props.food.servingSize} {props.food.servingUnit} × {entry.quantity}
-											</p>
-										</div>
-										<div className="text-right">
-											<div className="font-mono font-semibold text-sm">{Math.round(props.food.calories * entry.quantity)} Cal</div>
-											<div className="text-[10px] text-muted-foreground">
-												{Math.round(props.food.protein * entry.quantity)}g P · {Math.round(props.food.carbs * entry.quantity)}g C ·{" "}
-												{Math.round(props.food.fat * entry.quantity)}g F
-											</div>
-										</div>
-									</div>
-									{entry.note && <p className="mt-2 text-muted-foreground text-sm">{entry.note}</p>}
-								</li>
+								<EntryItem key={entry._id} food={props.food} entry={entry} dropdownItems={{ edit: true, delete: true, viewEntry: true }} />
 							))}
 						</React.Fragment>
 					)
