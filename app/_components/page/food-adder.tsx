@@ -10,9 +10,9 @@ import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
 import { FoodCommand } from "@/components/food/food-command"
+import { FormNumberInput } from "@/components/form-number-input"
 import { Button, buttonVariants } from "@/components/shadcn/button"
 import { Card } from "@/components/shadcn/card"
-import { Input } from "@/components/shadcn/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
 import { createEntrySchema, type Food } from "@/convex/schema"
@@ -74,7 +74,7 @@ export const FoodAdder = () => {
 				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
 					<div className="grid gap-1">
 						<span className="text-muted-foreground text-sm">Quantity</span>
-						<Input {...form.register("quantity", { valueAsNumber: true })} />
+						<FormNumberInput form={form} value="quantity" />
 					</div>
 
 					<div className="grid gap-1">

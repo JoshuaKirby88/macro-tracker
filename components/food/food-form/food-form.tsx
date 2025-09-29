@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
+import { FormNumberInput } from "@/components/form-number-input"
 import { ImagePicker } from "@/components/image-picker"
 import { Button } from "@/components/shadcn/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/shadcn/card"
@@ -102,23 +103,8 @@ export const FoodForm = (props: { type: "create" } | { type: "update"; food: Foo
 								<label htmlFor={field.value} className="text-muted-foreground text-sm">
 									{field.title ?? capitalize(field.value)} {field.isGram ? "(g)" : ""}
 								</label>
-								<Input
-									type={field.isNumber ? "number" : undefined}
-									inputMode={field.isNumber ? "decimal" : undefined}
-									step={field.isNumber ? "any" : undefined}
-									{...form.register(
-										field.value,
-										field.isNumber
-											? {
-													setValueAs: (v) => {
-														if (v === "" || v === null || v === undefined) return undefined
-														const n = typeof v === "number" ? v : Number(v)
-														return Number.isNaN(n) ? undefined : n
-													},
-												}
-											: undefined,
-									)}
-								/>
+
+								{field.isNumber ? <FormNumberInput form={form} value={field.value} /> : <Input {...form.register(field.value)} />}
 							</div>
 						))}
 					</CardContent>

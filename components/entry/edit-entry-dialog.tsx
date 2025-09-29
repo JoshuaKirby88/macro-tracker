@@ -5,12 +5,13 @@ import { toast } from "sonner"
 import type z from "zod/v3"
 import { Button } from "@/components/shadcn/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/shadcn/dialog"
-import { Input } from "@/components/shadcn/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/shadcn/select"
 import { api } from "@/convex/_generated/api"
 import { type Entry, updateEntrySchema } from "@/convex/schema"
 import { entryUtil } from "@/utils/entry-util"
 import { toastFormError } from "@/utils/form/toast-form-error"
+import { FormNumberInput } from "../form-number-input"
+import { Label } from "../shadcn/label"
 
 export const EditEntryDialog = (props: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; entry: Entry }) => {
 	const updateEntry = useMutation(api.entries.update)
@@ -36,10 +37,8 @@ export const EditEntryDialog = (props: { isOpen: boolean; setIsOpen: (isOpen: bo
 				<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid gap-4">
 					<div className="grid grid-cols-1 gap-4">
 						<div className="grid gap-1">
-							<label htmlFor="edit-quantity" className="text-muted-foreground text-sm">
-								Quantity
-							</label>
-							<Input id="edit-quantity" {...form.register("quantity", { valueAsNumber: true })} />
+							<Label className="text-muted-foreground text-sm">Quantity</Label>
+							<FormNumberInput form={form} value="quantity" />
 						</div>
 
 						<div className="grid gap-1">
