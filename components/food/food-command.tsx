@@ -29,11 +29,11 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 
 	return (
 		<>
-			<Button variant="outline" className="flex-grow px-3 text-sm" onClick={() => setIsOpen(true)}>
+			<Button variant="outline" className="flex w-full justify-start px-3 text-sm" onClick={() => setIsOpen(true)}>
 				{selectedFood ? (
 					<>
 						<Image src={GLOBALS.thiings(selectedFood.image)} alt={selectedFood.name} width={20} height={20} />
-						<span className="w-full text-left">{`${selectedFood.name}${selectedFood.brand ? ` (${selectedFood.brand})` : ""} — ${selectedFood.servingSize} ${selectedFood.servingUnit}`}</span>
+						<span className="truncate">{`${selectedFood.name}${selectedFood.brand ? ` (${selectedFood.brand})` : ""} — ${selectedFood.servingSize} ${selectedFood.servingUnit}`}</span>
 					</>
 				) : (
 					<span className="flex w-full items-center gap-2 text-muted-foreground">
@@ -45,7 +45,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 			</Button>
 
 			<CommandDialog open={isOpen} onOpenChange={setIsOpen} className="w-[35rem]">
-				<CommandInput placeholder="Type to search foods…" onInput={() => (listRef.current!.scrollTop = 0)} />
+				<CommandInput className="text-base" placeholder="Type to search foods…" onInput={() => (listRef.current!.scrollTop = 0)} />
 				<CommandList ref={listRef}>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup>

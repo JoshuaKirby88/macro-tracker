@@ -55,16 +55,20 @@ export const FoodAdder = () => {
 	return (
 		<Card className="-translate-x-1/2 fixed bottom-3 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
 			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
-				<div className="flex gap-4">
-					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
+				<div className="flex min-w-0 gap-2">
+					<div className="min-w-0 grow">
+						<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
+					</div>
 
-					<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon", className: "ml-auto" })}>
-						<PenIcon />
-					</Link>
+					<div className="flex gap-2">
+						<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
+							<PenIcon />
+						</Link>
 
-					<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
-						<PlusIcon />
-					</Link>
+						<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
+							<PlusIcon />
+						</Link>
+					</div>
 				</div>
 
 				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>

@@ -4,6 +4,7 @@ import { useQuery } from "convex/react"
 import Image from "next/image"
 import Link from "next/link"
 import { useMemo, useState } from "react"
+import { Input } from "@/components/shadcn/input"
 import { api } from "@/convex/_generated/api"
 import { GLOBALS } from "@/utils/globals"
 
@@ -23,17 +24,7 @@ export const FoodsList = () => {
 
 	return (
 		<>
-			<div className="mb-4">
-				<input
-					type="text"
-					value={search}
-					onChange={(e) => setSearch(e.target.value)}
-					placeholder="Search foods by name or brand..."
-					className="w-full rounded-md border px-3 py-2 text-sm"
-					aria-label="Search foods"
-					autoFocus
-				/>
-			</div>
+			<Input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search foods by name or brand..." className="mb-4 w-full" aria-label="Search foods" autoFocus />
 
 			{sorted.length === 0 ? (
 				<p className="text-muted-foreground">No foods yet.</p>
