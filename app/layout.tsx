@@ -52,7 +52,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
 								{children}
 
-								<Toaster />
+								<Toaster position="top-right" />
 							</ConvexProvider>
 						</ReactQueryProvider>
 					</ThemeProvider>
