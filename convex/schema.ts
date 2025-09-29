@@ -54,6 +54,6 @@ export const createOrUpdateGoalSchema = goalSchema.omit({ userId: true, createdA
 
 export default defineSchema({
 	food: defineTable(zodOutputToConvex(foodSchema)).index("byUserId", ["userId", "name"]),
-	entry: defineTable(zodOutputToConvex(entrySchema)).index("byUserIdEntryDate", ["userId", "entryDate"]),
+	entry: defineTable(zodOutputToConvex(entrySchema)).index("byUserIdEntryDate", ["userId", "entryDate"]).index("byFoodId", ["foodId"]),
 	goal: defineTable(zodOutputToConvex(goalSchema)).index("byUserIdStartDate", ["userId", "startDate"]),
 })

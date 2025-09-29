@@ -53,7 +53,7 @@ export const FoodAdder = () => {
 	}
 
 	return (
-		<Card className="-translate-x-1/2 fixed bottom-2 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
+		<Card className="-translate-x-1/2 fixed bottom-3 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
 			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
 				<div className="flex gap-4">
 					<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />

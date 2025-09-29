@@ -76,8 +76,23 @@ export const update = mutation({
 	},
 })
 
+export const byFoodId = query({
+	args: zodOutputToConvex(z.object({ foodId: zid("food") })),
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity()
+		if (!identity) return []
+
+		return ctx.db
+			.query("entry")
+			.withIndex("byFoodId", (q) => q.eq("foodId", args.foodId))
+			.filter((q) => q.eq(q.field("userId"), identity.subject))
+			.collect()
+	},
+})
+
 export const remove = mutation({
 	args: zodOutputToConvex(z.object({ id: zid("entry") })),
+
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity()
 		if (!identity) throw new Error("Not authenticated")

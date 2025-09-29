@@ -4,6 +4,7 @@ import { useQuery } from "convex/react"
 import { useParams } from "next/navigation"
 import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
+import { FoodEntries } from "./food-entries"
 import { FoodForm } from "./food-form"
 
 export const FoodDetails = () => {
@@ -16,7 +17,12 @@ export const FoodDetails = () => {
 	if (food === null) {
 		return <p className="text-destructive">Food not found.</p>
 	}
-	return <FoodForm food={food} />
+	return (
+		<>
+			<FoodForm food={food} />
+			<FoodEntries food={food} />
+		</>
+	)
 }
 
 export default FoodDetails
