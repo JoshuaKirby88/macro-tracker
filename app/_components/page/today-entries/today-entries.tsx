@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react"
 import Image from "next/image"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/shadcn/card"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/shadcn/carousel"
 import { api } from "@/convex/_generated/api"
@@ -81,24 +82,27 @@ export const TodayEntries = () => {
 
 											return (
 												<div key={entry._id} className="flex items-center gap-5 rounded-md border p-3">
-													<Image src={GLOBALS.thiings(food.image)} width={50} height={50} alt="Food Image" />
+													<Link href={`/foods/${entry.foodId}`} className="flex min-w-0 flex-1 items-center gap-5">
+														<Image src={GLOBALS.thiings(food.image)} width={50} height={50} alt="Food Image" />
 
-													<div className="min-w-0">
-														<div className="truncate font-medium">
-															{food.name}
-															{food.brand && <span className="ml-1 text-muted-foreground text-sm">({food.brand})</span>}
+														<div className="min-w-0">
+															<div className="truncate font-medium">
+																{food.name}
+																{food.brand && <span className="ml-1 text-muted-foreground text-sm">({food.brand})</span>}
+															</div>
+															<div className="text-muted-foreground text-xs">
+																{food.servingSize} × {entry.quantity}
+															</div>
 														</div>
-														<div className="text-muted-foreground text-xs">
-															{food.servingSize} × {entry.quantity}
-														</div>
-													</div>
 
-													<div className="ml-auto shrink-0 text-right">
-														<div className="font-mono font-semibold text-sm">{Math.round(food.calories * entry.quantity)} Cal</div>
-														<div className="text-[10px] text-muted-foreground">
-															{Math.round(food.protein * entry.quantity)}g P · {Math.round(food.carbs * entry.quantity)}g C · {Math.round(food.fat * entry.quantity)}g F
+														<div className="ml-auto shrink-0 text-right">
+															<div className="font-mono font-semibold text-sm">{Math.round(food.calories * entry.quantity)} Cal</div>
+															<div className="text-[10px] text-muted-foreground">
+																{Math.round(food.protein * entry.quantity)}g P · {Math.round(food.carbs * entry.quantity)}g C · {Math.round(food.fat * entry.quantity)}g
+																F
+															</div>
 														</div>
-													</div>
+													</Link>
 
 													<EntryDropdown entry={entry} />
 												</div>
