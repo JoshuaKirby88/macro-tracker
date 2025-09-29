@@ -37,27 +37,28 @@ export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Par
 					>
 						<Image src={GLOBALS.thiings(props.food.image)} width={50} height={50} alt="Food Image" className="scale-125" />
 
-						<div className="min-w-0">
-							<div className="truncate font-medium">
-								{props.food.name}
-								{props.food.brand && <span className="ml-1 text-muted-foreground text-sm">({props.food.brand})</span>}
+						<div className="min-w-0 flex-1">
+							<div className="flex items-baseline gap-3">
+								<div className="min-w-0 flex-1 truncate font-medium">
+									{props.food.name}
+									{props.food.brand && <span className="ml-1 text-muted-foreground text-sm">({props.food.brand})</span>}
+								</div>
+								<div className="shrink-0 font-mono font-semibold text-sm">{calories} Cal</div>
 							</div>
-							<div className="space-x-2 text-muted-foreground text-xs">
-								{[!props.hideMealType && capitalize(props.entry.mealType), `${props.food.servingSize * props.entry.quantity} ${props.food.servingUnit}`]
-									.filter(Boolean)
-									.map((str, i) => (
-										<React.Fragment key={i}>
-											<span key={i}>{str}</span>
-											<span className="last:hidden">|</span>
-										</React.Fragment>
-									))}
-							</div>
-						</div>
-
-						<div className="ml-auto shrink-0 text-right">
-							<div className="font-mono font-semibold text-sm">{calories} Cal</div>
-							<div className="text-[10px] text-muted-foreground">
-								{protein}g P · {carbs}g C · {fat}g F
+							<div className="mt-0.5 flex items-baseline justify-between">
+								<div className="space-x-2 text-muted-foreground text-xs">
+									{[!props.hideMealType && capitalize(props.entry.mealType), `${props.food.servingSize * props.entry.quantity} ${props.food.servingUnit}`]
+										.filter(Boolean)
+										.map((str, i) => (
+											<React.Fragment key={i}>
+												<span key={i}>{str}</span>
+												<span className="last:hidden">|</span>
+											</React.Fragment>
+										))}
+								</div>
+								<div className="shrink-0 text-[10px] text-muted-foreground">
+									{protein}g P · {carbs}g C · {fat}g F
+								</div>
 							</div>
 						</div>
 					</button>
