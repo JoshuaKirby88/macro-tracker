@@ -16,6 +16,7 @@ import { EditEntryDialog } from "./edit-entry-dialog"
 type DropdownItem = "edit" | "delete" | "viewFood" | "viewEntry"
 
 export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Partial<Record<DropdownItem, boolean>>; hideMealType?: boolean }) => {
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 	const [isEditOpen, setIsEditOpen] = useState(false)
 	const removeEntry = useMutation(api.entries.remove)
 
@@ -27,9 +28,13 @@ export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Par
 
 	return (
 		<>
-			<DropdownMenu>
+			<DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
 				<DropdownMenuTrigger asChild>
-					<button className="flex w-full cursor-pointer items-center gap-5 rounded-2xl border border-mono-300 bg-mono-200 p-3 text-left">
+					<button
+						className="flex w-full cursor-pointer items-center gap-5 rounded-2xl border border-mono-300 bg-mono-200 p-3 text-left"
+						onPointerDown={(e) => e.preventDefault()}
+						onClick={() => setIsDropdownOpen((prev) => !prev)}
+					>
 						<Image src={GLOBALS.thiings(props.food.image)} width={50} height={50} alt="Food Image" className="scale-125" />
 
 						<div className="min-w-0">
