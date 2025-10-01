@@ -35,7 +35,7 @@ export const TodayEntries = () => {
 		.filter((section) => section.entries.length > 0)
 
 	return (
-		<Carousel opts={{ duration: 20 }}>
+		<Carousel opts={{ duration: 20, startIndex: entryUtil.mealTypes.indexOf(entryUtil.getMealType(new Date())) }}>
 			<Card className="px-3 md:px-4 lg:px-6">
 				<CardHeader className="flex h-8 flex-row justify-between px-0">
 					<CardTitle>Today’s entries</CardTitle>
