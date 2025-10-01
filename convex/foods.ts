@@ -88,3 +88,31 @@ export const update = mutation({
 		})
 	},
 })
+
+export const updateQuantitiesForFood = mutation({
+	args: zodOutputToConvex(z.object({ foodId: zid("food"), previousServingSize: z.number(), nextServingSize: z.number() })),
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity()
+		if (!identity) throw new Error("Not authenticated")
+
+		const food = await ctx.db.get(args.foodId)
+		if (!food || food.userId !== identity.subject) throw new Error("Food not found")
+
+		const multiplier = args.previousServingSize / args.nextServingSize
+
+		const entries = await ctx.db
+			.query("entry")
+			.withIndex("byFoodId", (q) => q.eq("foodId", args.foodId))
+			.filter((q) => q.eq(q.field("userId"), identity.subject))
+			.collect()
+
+		const now = Date.now()
+
+		for (const entry of entries) {
+			await ctx.db.patch(entry._id, {
+				quantity: entry.quantity * multiplier,
+				updatedAt: now,
+			})
+		}
+	},
+})

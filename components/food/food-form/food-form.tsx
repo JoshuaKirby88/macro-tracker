@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -17,6 +18,7 @@ import { capitalize } from "@/utils/capitalize"
 import { toastFormError } from "@/utils/form/toast-form-error"
 import { FoodFormMultiplier } from "./food-form-multiplier"
 import { FoodFormUploadImage, FoodFormUploadImageButton } from "./food-form-upload-image"
+import { UpdateEntriesQuantityFormDialog } from "./update-entries-quantity-form-dialog"
 
 export type FoodFormField = { value: keyof Food; title?: string; isGram?: boolean; isNumber?: boolean }
 
@@ -46,6 +48,8 @@ export const FoodForm = (props: { type: "create" } | { type: "update"; food: Foo
 	const router = useRouter()
 	const createFood = useMutation(api.foods.create)
 	const updateFood = useMutation(api.foods.update)
+	const [isDialogOpen, setIsDialogOpen] = useState(false)
+	const [servingSizeDelta, setServingSizeDelta] = useState<{ prev: number; next: number } | null>(null)
 
 	const schema = props.type === "create" ? config.createFoodSchema : updateFoodSchema
 	const form = useForm({ resolver: zodResolver(schema), defaultValues: props.type === "create" ? { image: config.defaults.image } : props.food })
@@ -75,6 +79,11 @@ export const FoodForm = (props: { type: "create" } | { type: "update"; food: Foo
 				await updateFood({ id: props.food._id, ...input })
 				toast.success("Saved")
 				form.reset(input)
+
+				if (typeof input.servingSize === "number" && input.servingSize !== props.food.servingSize) {
+					setServingSizeDelta({ prev: props.food.servingSize, next: input.servingSize })
+					setIsDialogOpen(true)
+				}
 			}
 		} catch (error: unknown) {
 			toast.error(error instanceof Error ? error.message : "Something went wrong")
@@ -124,6 +133,8 @@ export const FoodForm = (props: { type: "create" } | { type: "update"; food: Foo
 					</CardFooter>
 				</form>
 			</Card>
+
+			{props.type === "update" && <UpdateEntriesQuantityFormDialog food={props.food} isOpen={isDialogOpen} setIsOpen={setIsDialogOpen} servingSizeDelta={servingSizeDelta} />}
 		</FoodFormUploadImage>
 	)
 }
