@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
@@ -27,6 +27,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "Onigiri",
 	description: "Onigiri - AI Macro Tracker",
+	themeColor: [
+		{ media: "(prefers-color-scheme: dark)", color: "#111111" },
+		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
+	],
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "black",
+	},
+}
+
+export const viewport: Viewport = {
+	viewportFit: "cover",
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
