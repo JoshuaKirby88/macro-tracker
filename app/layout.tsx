@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import Image from "next/image"
 import Link from "next/link"
+import Script from "next/script"
 import "./globals.css"
 import { ClerkProvider } from "@clerk/nextjs"
 import { SFProRoundedSemibold } from "@/components/fonts/fonts"
@@ -35,6 +36,11 @@ export const metadata: Metadata = {
 		capable: true,
 		statusBarStyle: "black",
 	},
+	icons: {
+		icon: "/favicon.ico",
+		apple: "/apple-icon.png",
+	},
+	manifest: "/manifest.webmanifest",
 }
 
 export const viewport: Viewport = {
@@ -45,6 +51,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 	return (
 		<ClerkProvider>
 			<html lang="en">
+				<head>
+					<meta name="apple-mobile-web-app-capable" content="yes" />
+					<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+					<meta name="mobile-web-app-capable" content="yes" />
+					<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111111" />
+					<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+				</head>
+
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
 						<ReactQueryProvider>
@@ -65,6 +79,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 								{children}
 
 								<Toaster position="top-right" />
+
+								<Script id="sw-register" strategy="afterInteractive">
+									{`if ('serviceWorker' in navigator) {
+										window.addEventListener('load', () => {
+											navigator.serviceWorker.register('/sw.js').catch(() => {})
+										})
+									}`}
+								</Script>
 							</ConvexProvider>
 						</ReactQueryProvider>
 					</ThemeProvider>

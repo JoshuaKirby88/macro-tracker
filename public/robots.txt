@@ -1,0 +1,15 @@
+# robots.txt for Onigiri (AI Macro Tracker)
+
+# Default policy: allow everything except internal build assets and API routes
+User-agent: *
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+# Ensure PWA assets are crawlable
+Allow: /manifest.webmanifest
+Allow: /apple-icon.png
+Allow: /icons/
+
+# Optional: add your production sitemap URL (uncomment and replace the domain)
+# Sitemap: https://your-domain.example/sitemap.xml
