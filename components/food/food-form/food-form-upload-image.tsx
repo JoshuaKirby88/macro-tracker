@@ -1,13 +1,12 @@
 "use client"
 
 import { UploadIcon } from "lucide-react"
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
 import { analyzeFoodImageAction } from "@/actions/food/analyze-food-image-action"
 import { FullscreenDropOverlay } from "@/components/food/food-form/fullscreen-drop-overlay"
-import { ImagePreviewOverlay } from "@/components/food/food-form/image-preview-overlay"
 import { Button } from "@/components/shadcn/button"
 import type { updateFoodSchema } from "@/convex/schema"
 import { type FileUploadActions, useFileUpload } from "@/hooks/use-file-upload"
@@ -15,13 +14,11 @@ import { type FileUploadActions, useFileUpload } from "@/hooks/use-file-upload"
 const context = createContext<FileUploadActions | null>(null)
 
 export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof updateFoodSchema>> } & React.ComponentProps<"div">) => {
-	const [isScanning, setIsScanning] = useState(false)
-
 	const [state, actions] = useFileUpload({
 		accept: "image/jpeg,image/png,image/webp,image/gif",
 		multiple: true,
 		onFilesAdded: async (addedFiles) => {
-			setIsScanning(true)
+			const toastId = toast.loading("Scanning...")
 			try {
 				const fileList = addedFiles.map((f) => f.file).filter((f): f is File => f instanceof File)
 				if (fileList.length === 0) return
@@ -30,7 +27,7 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 				const supportedFiles = fileList.filter((file) => allowedTypes.has(file.type) || /\.(jpe?g|png|webp|gif)$/i.test(file.name))
 				const unsupportedCount = fileList.length - supportedFiles.length
 				if (unsupportedCount > 0) {
-					toast.error(`Ignored ${unsupportedCount} unsupported image${unsupportedCount > 1 ? "s" : ""}. Please upload JPEG, PNG, WEBP, or GIF.`)
+					toast.error(`Ignored ${unsupportedCount} unsupported image${unsupportedCount > 1 ? "s" : ""}. Please upload JPEG, PNG, WEBP, or GIF.`, { id: toastId })
 				}
 				if (supportedFiles.length === 0) return
 
@@ -49,18 +46,16 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 				const result = await analyzeFoodImageAction({ imageBase64s: base64s })
 				const entries = Object.entries(result.fields)
 				if (entries.length === 0) {
-					toast.error("No nutrition data detected from images")
+					toast.error("No nutrition data detected from images", { id: toastId })
 					return
 				}
 				for (const [k, v] of entries) {
 					props.form.setValue(k as any, v as any)
 				}
-				toast.success(`Extracted nutrition from ${base64s.length} image${base64s.length > 1 ? "s" : ""}`)
+				toast.success(`Extracted nutrition from ${base64s.length} image${base64s.length > 1 ? "s" : ""}`, { id: toastId })
 			} catch (e) {
 				const msg = e instanceof Error ? e.message : "Image analysis failed"
-				toast.error(msg)
-			} finally {
-				setIsScanning(false)
+				toast.error(msg, { id: toastId })
 			}
 		},
 	})
@@ -70,7 +65,7 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 			<div className="relative" onDragEnter={actions.handleDragEnter} onDragLeave={actions.handleDragLeave} onDragOver={actions.handleDragOver} onDrop={actions.handleDrop} {...props}>
 				<input {...actions.getInputProps({ accept: "image/jpeg,image/png,image/webp,image/gif", multiple: true })} className="sr-only" aria-label="Upload image file" tabIndex={-1} />
 
-				<ImagePreviewOverlay previewUrl={state.files[0]?.preview} isOpen={isScanning} setIsOpen={() => setIsScanning(false)} />
+				{/*<ImagePreviewOverlay previewUrl={state.files[0]?.preview} isOpen={isScanning} setIsOpen={() => setIsScanning(false)} />*/}
 
 				<FullscreenDropOverlay
 					isDragging={state.isDragging}
