@@ -57,7 +57,11 @@ export const FoodAdder = () => {
 			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
 				<div className="flex min-w-0 gap-2">
 					<div className="min-w-0 grow">
-						<Controller name="foodId" control={form.control} render={({ field }) => <FoodCommand foodId={field.value} onChange={field.onChange} />} />
+						<Controller
+							name="foodId"
+							control={form.control}
+							render={({ field }) => <FoodCommand foodId={field.value} onChange={(val) => field.onChange(val)} onSelect={() => setTimeout(() => form.setFocus("quantity"), 0)} />}
+						/>
 					</div>
 
 					<div className="flex gap-2">

@@ -8,9 +8,10 @@ import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
 import { GLOBALS } from "@/utils/globals"
 
-export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void }) => {
+export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void; onSelect?: () => void }) => {
 	const foods = useQuery(api.foods.forUser, {})
 	const [isOpen, setIsOpen] = React.useState(false)
+	const [inputValue, setInputValue] = React.useState("")
 	const selectedFood = foods?.find((f) => f._id === props.foodId)
 	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
 	const listRef = React.useRef<HTMLDivElement | null>(null)
@@ -44,8 +45,16 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 				)}
 			</Button>
 
-			<CommandDialog open={isOpen} onOpenChange={setIsOpen} className="w-[35rem]">
-				<CommandInput className="text-base" placeholder="Type to search foods…" onInput={() => (listRef.current!.scrollTop = 0)} />
+			<CommandDialog open={isOpen} onOpenChange={(isOpen) => setIsOpen(isOpen)} className="w-[35rem]">
+				<CommandInput
+					className="text-base"
+					placeholder="Type to search foods…"
+					value={inputValue}
+					onValueChange={(v) => {
+						setInputValue(v)
+						listRef.current!.scrollTop = 0
+					}}
+				/>
 				<CommandList ref={listRef}>
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup>
@@ -57,6 +66,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 								onSelect={() => {
 									props.onChange(food._id)
 									setIsOpen(false)
+									props.onSelect?.()
 								}}
 							>
 								<Image src={GLOBALS.thiings(food.image)} alt={food.name} width={40} height={40} />

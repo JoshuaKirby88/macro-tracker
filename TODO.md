@@ -10,7 +10,7 @@
 - [x] Show more title for each entry
 - [x] Increase width of each entry
 - [x] Move toast to top
-- [ ] Extract multipler into a component, and add it to edit food page
+- [x] Extract multipler into a component, and add it to edit food page
 - [ ] Control what bars to show
 - [ ] Add custom metrics: erythritol, sucralose…
 - [ ] Add search and extraction for common foods
