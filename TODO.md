@@ -15,7 +15,6 @@
 - [ ] Add custom metrics: erythritol, sucralose…
 - [ ] Add search and extraction for common foods
 - [ ] Create food dataset
-- [ ] Fix image scanning animation
 - [ ] Show summaries/trends like in Apple health
 
 # Image -> Macros

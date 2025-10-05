@@ -56,6 +56,8 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 			} catch (e) {
 				const msg = e instanceof Error ? e.message : "Image analysis failed"
 				toast.error(msg, { id: toastId })
+			} finally {
+				actions.clearFiles()
 			}
 		},
 	})
