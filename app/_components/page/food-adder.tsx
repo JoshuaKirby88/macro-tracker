@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { PenIcon, PlusIcon } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -28,6 +28,7 @@ export const FoodAdder = () => {
 	const searchParams = useSearchParams()
 	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
+	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
 
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), quantity: 1 } })
 	const selectedFoodId = form.watch("foodId")
@@ -41,6 +42,16 @@ export const FoodAdder = () => {
 			}
 		}
 	}, [searchParams])
+
+	useEffect(() => {
+		if (!entriesWithFoods?.entries?.length) return
+		const latest = entriesWithFoods.entries.reduce((acc, e) => (e.createdAt > acc.createdAt ? e : acc), entriesWithFoods.entries[0])
+		const timeDefault = entryUtil.getMealType(new Date())
+		const currentMeal = form.getValues("mealType")
+		if (currentMeal === timeDefault) {
+			form.setValue("mealType", latest.mealType)
+		}
+	}, [entriesWithFoods, form])
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
