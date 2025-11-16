@@ -2,7 +2,7 @@
 
 import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
 import { Authenticated, Unauthenticated } from "convex/react"
-import { SettingsIcon } from "lucide-react"
+import { DownloadIcon, SettingsIcon } from "lucide-react"
 import Link from "next/link"
 import { Button, buttonVariants } from "@/components/shadcn/button"
 
@@ -20,6 +20,10 @@ export const AuthButtons = () => {
 			</Unauthenticated>
 
 			<Authenticated>
+				<Link href="/export" className={buttonVariants({ variant: "outline", size: "icon" })} title="Export">
+					<DownloadIcon />
+				</Link>
+
 				<Link href="/settings" className={buttonVariants({ variant: "outline", size: "icon" })}>
 					<SettingsIcon />
 				</Link>

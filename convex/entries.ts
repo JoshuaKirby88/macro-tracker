@@ -103,3 +103,29 @@ export const remove = mutation({
 		await ctx.db.delete(args.id)
 	},
 })
+
+export const withFoodsForDateRange = query({
+	args: { startDate: v.string(), endDate: v.string() },
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity()
+		if (!identity) return null
+
+		// Get all entries for the user
+		const allEntries = await ctx.db
+			.query("entry")
+			.withIndex("byUserIdEntryDate")
+			.filter((q) => q.eq(q.field("userId"), identity.subject))
+			.collect()
+
+		// Filter entries by date range
+		const entries = allEntries.filter((entry) => {
+			return entry.entryDate >= args.startDate && entry.entryDate <= args.endDate
+		})
+
+		// Get unique food IDs and fetch foods
+		const foodIds = Array.from(new Set(entries.map((e) => e.foodId)))
+		const foods = (await Promise.all(foodIds.map((foodId) => ctx.db.get(foodId)))).filter((food) => food !== null)
+
+		return { entries, foods }
+	},
+})
