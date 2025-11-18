@@ -39,14 +39,21 @@ export const entrySchema = z.object({
 export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
 export const updateEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true })
 
-export type Goal = Pretty<z.infer<typeof goalSchema> & { _id: DataModel["goal"]["document"]["_id"] }>
-export const goalSchema = z.object({
-	userId: z.string(),
-	startDate: z.string(),
+const mealGoalSchema = z.object({
 	calories: z.optional(z.number()),
 	protein: z.optional(z.number()),
 	fat: z.optional(z.number()),
 	carbs: z.optional(z.number()),
+	fiber: z.optional(z.number()),
+})
+
+export type Goal = Pretty<z.infer<typeof goalSchema> & { _id: DataModel["goal"]["document"]["_id"] }>
+export const goalSchema = z.object({
+	userId: z.string(),
+	startDate: z.string(),
+	breakfast: z.optional(mealGoalSchema),
+	lunch: z.optional(mealGoalSchema),
+	dinner: z.optional(mealGoalSchema),
 	createdAt: z.number(),
 	updatedAt: z.number(),
 })
