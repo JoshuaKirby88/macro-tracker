@@ -17,7 +17,7 @@ export const TodayEntries = () => {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Today’s entries</CardTitle>
+					<CardTitle>Today's entries</CardTitle>
 					<CardDescription>Food you have logged today by meal.</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -34,11 +34,19 @@ export const TodayEntries = () => {
 		}))
 		.filter((section) => section.entries.length > 0)
 
+	const totals = entryUtil.getTotals(entriesWithFoods)
+
 	return (
 		<Carousel opts={{ duration: 20, startIndex: entryUtil.mealTypes.indexOf(entryUtil.getMealType(new Date())) }}>
 			<Card className="px-3 md:px-4 lg:px-6">
 				<CardHeader className="flex h-8 flex-row justify-between px-0">
-					<CardTitle>Today’s entries</CardTitle>
+					<CardTitle className="flex items-center justify-between w-full">
+						<span>Today's entries</span>
+						<span className="font-mono text-muted-foreground text-sm ml-4">
+							<span className="text-foreground">{Math.round(totals.calories)} Cal</span> · {Math.round(totals.protein)}g P · {Math.round(totals.carbs)}g C ·{" "}
+							{Math.round(totals.fat)}g F
+						</span>
+					</CardTitle>
 
 					<div className="flex gap-2 lg:hidden">
 						<CarouselPrevious className="translate-0 static" />
@@ -49,7 +57,7 @@ export const TodayEntries = () => {
 				<CardContent className="px-0">
 					<CarouselContent>
 						{mealsWithEntries.map(({ mealType, entries }) => {
-							const totals = entries.reduce(
+							const mealTotals = entries.reduce(
 								(acc, entry) => {
 									const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
 									if (!food) return acc
@@ -68,8 +76,8 @@ export const TodayEntries = () => {
 									<div className="flex items-baseline justify-between">
 										<div className="font-bold text-xs capitalize">{mealType}</div>
 										<div className="font-mono text-muted-foreground text-xs">
-											<span className="text-foreground">{Math.round(totals.calories)} Cal</span> · {Math.round(totals.protein)}g P · {Math.round(totals.carbs)}g C ·{" "}
-											{Math.round(totals.fat)}g F
+											<span className="text-foreground">{Math.round(mealTotals.calories)} Cal</span> · {Math.round(mealTotals.protein)}g P · {Math.round(mealTotals.carbs)}g C ·{" "}
+											{Math.round(mealTotals.fat)}g F
 										</div>
 									</div>
 

@@ -11,6 +11,7 @@
 - [x] Increase width of each entry
 - [x] Move toast to top
 - [x] Extract multipler into a component, and add it to edit food page
+- [ ] Set goals for each meal
 - [ ] Control what bars to show
 - [ ] Add custom metrics: erythritol, sucralose…
 - [ ] Add search and extraction for common foods
