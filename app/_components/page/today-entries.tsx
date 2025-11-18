@@ -25,23 +25,31 @@ const MacroWithProgress = ({
 	goalValue,
 	unit,
 	className,
+	compact = false,
 }: {
 	value: number
 	goalValue: number | undefined
 	unit: string
 	className?: string
+	compact?: boolean
 }) => {
 	const rounded = Math.round(value)
+	const roundedGoal = goalValue ? Math.round(goalValue) : undefined
 	const percentage = goalValue ? (value / goalValue) * 100 : undefined
 
 	return (
-		<span className={cn("inline-flex items-center gap-1.5", className)}>
-			<span>{rounded}{unit}</span>
+		<span className={cn("inline-flex items-center gap-1", className)}>
+			{goalValue !== undefined ? (
+				<span>{rounded}/{roundedGoal}{unit}</span>
+			) : (
+				<span>{rounded}{unit}</span>
+			)}
 			{percentage !== undefined && (
 				<span className="relative inline-flex items-center">
 					<span
 						className={cn(
-							"h-1.5 w-8 rounded-full overflow-hidden bg-muted",
+							"rounded-full overflow-hidden bg-muted",
+							compact ? "h-1 w-6" : "h-1.5 w-8",
 						)}
 						title={`${Math.round(percentage)}% of goal`}
 					>
@@ -164,18 +172,16 @@ export const TodayEntries = () => {
 
 							return (
 								<CarouselItem key={mealType} className={cn("space-y-3", mealsWithEntries.length === 2 ? "lg:basis-1/2" : mealsWithEntries.length === 3 ? "lg:basis-1/3" : "")}>
-									<div className="flex items-baseline justify-between">
-										<div className="font-bold text-xs capitalize">{mealType}</div>
-										<div className="font-mono text-muted-foreground text-xs flex items-center gap-1.5">
-											<MacroWithProgress value={mealTotals.calories} goalValue={mealGoal?.calories} unit=" Cal" className="text-foreground" />
-											<span>·</span>
-											<MacroWithProgress value={mealTotals.protein} goalValue={mealGoal?.protein} unit="g P" />
-											<span>·</span>
-											<MacroWithProgress value={mealTotals.carbs} goalValue={mealGoal?.carbs} unit="g C" />
-											<span>·</span>
-											<MacroWithProgress value={mealTotals.fat} goalValue={mealGoal?.fat} unit="g F" />
-											<span>·</span>
-											<MacroWithProgress value={mealTotals.fiber} goalValue={mealGoal?.fiber} unit="g Fib" />
+									<div className="space-y-0.5">
+										<div className="flex items-center justify-between">
+											<div className="font-bold text-xs capitalize">{mealType}</div>
+											<MacroWithProgress value={mealTotals.calories} goalValue={mealGoal?.calories} unit=" Cal" className="text-foreground font-mono text-xs" compact />
+										</div>
+										<div className="font-mono text-[10px] text-muted-foreground flex items-center gap-1.5 flex-wrap">
+											<MacroWithProgress value={mealTotals.protein} goalValue={mealGoal?.protein} unit="g P" className="text-[10px]" compact />
+											<MacroWithProgress value={mealTotals.carbs} goalValue={mealGoal?.carbs} unit="g C" className="text-[10px]" compact />
+											<MacroWithProgress value={mealTotals.fat} goalValue={mealGoal?.fat} unit="g F" className="text-[10px]" compact />
+											<MacroWithProgress value={mealTotals.fiber} goalValue={mealGoal?.fiber} unit="g Fib" className="text-[10px]" compact />
 										</div>
 									</div>
 
