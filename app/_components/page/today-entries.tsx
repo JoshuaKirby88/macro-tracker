@@ -10,60 +10,45 @@ import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 
 const getProgressColor = (percentage: number): string => {
-	// Below goal is bad (not meeting target)
-	if (percentage < 90) return "bg-red-500"
-	// Close to goal (90-110%) is good (hitting target)
+	if (percentage < 90) return "bg-primary/80"
 	if (percentage <= 110) return "bg-green-500"
-	// Slightly over goal (110-120%) is okay but getting high
 	if (percentage <= 120) return "bg-yellow-500"
-	// Way over goal is concerning
 	return "bg-orange-500"
 }
 
-const MacroWithProgress = ({
-	value,
-	goalValue,
-	unit,
-	className,
-	compact = false,
-}: {
+const MiniMacro = ({ 
+	label, 
+	value, 
+	goal, 
+	unit 
+}: { 
+	label: string
 	value: number
-	goalValue: number | undefined
-	unit: string
-	className?: string
-	compact?: boolean
+	goal?: number
+	unit?: string 
 }) => {
-	const rounded = Math.round(value)
-	const roundedGoal = goalValue ? Math.round(goalValue) : undefined
-	const percentage = goalValue ? (value / goalValue) * 100 : undefined
-
+	const percent = goal ? Math.min((value / goal) * 100, 100) : 0
+	
 	return (
-		<span className={cn("inline-flex items-center gap-1", className)}>
-			{goalValue !== undefined ? (
-				<span>{rounded}/{roundedGoal}{unit}</span>
-			) : (
-				<span>{rounded}{unit}</span>
-			)}
-			{percentage !== undefined && (
-				<span className="relative inline-flex items-center">
-					<span
-						className={cn(
-							"rounded-full overflow-hidden bg-muted",
-							compact ? "h-1 w-6" : "h-1.5 w-8",
-						)}
-						title={`${Math.round(percentage)}% of goal`}
-					>
-						<span
-							className={cn(
-								"h-full block rounded-full transition-all",
-								getProgressColor(percentage),
-							)}
-							style={{ width: `${Math.min(percentage, 100)}%` }}
-						/>
-					</span>
+		<div className="flex flex-col min-w-[3.5rem]">
+			<div className="flex items-end justify-between text-[10px] leading-none mb-1.5">
+				<span className="font-semibold text-muted-foreground uppercase">{label}</span>
+				<span className={cn(
+					"font-mono font-medium", 
+					goal && value > goal ? "text-orange-500" : "text-foreground"
+				)}>
+					{Math.round(value)}{unit}
 				</span>
+			</div>
+			{goal && (
+				<div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+					<div 
+						className={cn("h-full rounded-full transition-all", getProgressColor(percent))} 
+						style={{ width: `${percent}%` }} 
+					/>
+				</div>
 			)}
-		</span>
+		</div>
 	)
 }
 
@@ -95,63 +80,70 @@ export const TodayEntries = () => {
 
 	const totals = entryUtil.getTotals(entriesWithFoods)
 
-	// Calculate daily goals by summing all meal goals
 	const dailyGoals = goal
 		? {
-				calories: (() => {
-					const sum =
-						(goal.breakfast?.calories ?? 0) + (goal.lunch?.calories ?? 0) + (goal.dinner?.calories ?? 0)
-					return sum > 0 ? sum : undefined
-				})(),
-				protein: (() => {
-					const sum =
-						(goal.breakfast?.protein ?? 0) + (goal.lunch?.protein ?? 0) + (goal.dinner?.protein ?? 0)
-					return sum > 0 ? sum : undefined
-				})(),
-				fat: (() => {
-					const sum = (goal.breakfast?.fat ?? 0) + (goal.lunch?.fat ?? 0) + (goal.dinner?.fat ?? 0)
-					return sum > 0 ? sum : undefined
-				})(),
-				carbs: (() => {
-					const sum =
-						(goal.breakfast?.carbs ?? 0) + (goal.lunch?.carbs ?? 0) + (goal.dinner?.carbs ?? 0)
-					return sum > 0 ? sum : undefined
-				})(),
-				fiber: (() => {
-					const sum =
-						(goal.breakfast?.fiber ?? 0) + (goal.lunch?.fiber ?? 0) + (goal.dinner?.fiber ?? 0)
-					return sum > 0 ? sum : undefined
-				})(),
+				calories: (goal.breakfast?.calories ?? 0) + (goal.lunch?.calories ?? 0) + (goal.dinner?.calories ?? 0) || undefined,
+				protein: (goal.breakfast?.protein ?? 0) + (goal.lunch?.protein ?? 0) + (goal.dinner?.protein ?? 0) || undefined,
+				fat: (goal.breakfast?.fat ?? 0) + (goal.lunch?.fat ?? 0) + (goal.dinner?.fat ?? 0) || undefined,
+				carbs: (goal.breakfast?.carbs ?? 0) + (goal.lunch?.carbs ?? 0) + (goal.dinner?.carbs ?? 0) || undefined,
+				fiber: (goal.breakfast?.fiber ?? 0) + (goal.lunch?.fiber ?? 0) + (goal.dinner?.fiber ?? 0) || undefined,
 			}
 		: { calories: undefined, protein: undefined, fat: undefined, carbs: undefined, fiber: undefined }
 
 	return (
 		<Carousel opts={{ duration: 20, startIndex: entryUtil.mealTypes.indexOf(entryUtil.getMealType(new Date())) }}>
-			<Card className="px-3 md:px-4 lg:px-6">
-				<CardHeader className="flex h-8 flex-row justify-between px-0">
-					<CardTitle className="flex items-center justify-between w-full">
-						<span>Today's entries</span>
-						<span className="font-mono text-muted-foreground text-sm ml-4 flex items-center gap-2">
-							<MacroWithProgress value={totals.calories} goalValue={dailyGoals.calories} unit=" Cal" className="text-foreground" />
-							<span>·</span>
-							<MacroWithProgress value={totals.protein} goalValue={dailyGoals.protein} unit="g P" />
-							<span>·</span>
-							<MacroWithProgress value={totals.carbs} goalValue={dailyGoals.carbs} unit="g C" />
-							<span>·</span>
-							<MacroWithProgress value={totals.fat} goalValue={dailyGoals.fat} unit="g F" />
-							<span>·</span>
-							<MacroWithProgress value={totals.fiber} goalValue={dailyGoals.fiber} unit="g Fib" />
-						</span>
-					</CardTitle>
+			<Card className="border-0 shadow-none sm:border sm:shadow-sm">
+				<CardContent className="p-0 sm:p-6">
+					<div className="flex flex-col gap-4 mb-4 px-4 pt-4 sm:px-0 sm:pt-0">
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+							<div className="flex items-center justify-between">
+								<CardTitle className="text-lg">Today's entries</CardTitle>
+								<div className="flex gap-1 lg:hidden">
+									<CarouselPrevious className="static h-8 w-8 translate-y-0" />
+									<CarouselNext className="static h-8 w-8 translate-y-0" />
+								</div>
+							</div>
 
-					<div className="flex gap-2 lg:hidden">
-						<CarouselPrevious className="translate-0 static" />
-						<CarouselNext className="translate-0 static" />
+							{/* Ultra Compact Summary */}
+							<div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm bg-secondary/10 rounded-lg p-3 sm:p-0 sm:bg-transparent">
+								{/* Main Calories */}
+								<div className="flex flex-col min-w-[6rem]">
+									<div className="flex items-baseline justify-between mb-1.5">
+										<span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Calories</span>
+										<span className="font-mono text-sm font-bold">
+											{Math.round(totals.calories)}
+											{dailyGoals.calories && (
+												<span className="text-[10px] font-normal text-muted-foreground ml-1">
+													/ {Math.round(dailyGoals.calories)}
+												</span>
+											)}
+										</span>
+									</div>
+									{dailyGoals.calories && (
+										<div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+											<div 
+												className={cn("h-full rounded-full transition-all", getProgressColor((totals.calories / dailyGoals.calories) * 100))} 
+												style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }} 
+											/>
+										</div>
+									)}
+								</div>
+
+								{/* Divider for desktop */}
+								<div className="hidden sm:block h-8 w-px bg-border/50" />
+
+								{/* Macros Row */}
+								<div className="flex items-center gap-4 flex-1 sm:flex-none overflow-x-auto hide-scrollbar pb-1 sm:pb-0">
+									<MiniMacro label="Protein" value={totals.protein} goal={dailyGoals.protein} unit="g" />
+									<MiniMacro label="Carbs" value={totals.carbs} goal={dailyGoals.carbs} unit="g" />
+									<MiniMacro label="Fat" value={totals.fat} goal={dailyGoals.fat} unit="g" />
+									<MiniMacro label="Fiber" value={totals.fiber} goal={dailyGoals.fiber} unit="g" />
+								</div>
+							</div>
+						</div>
 					</div>
-				</CardHeader>
 
-				<CardContent className="px-0">
-					<CarouselContent>
+					<CarouselContent className="-ml-4 px-4 sm:px-0">
 						{mealsWithEntries.map(({ mealType, entries }) => {
 							const mealTotals = entries.reduce(
 								(acc, entry) => {
@@ -171,27 +163,51 @@ export const TodayEntries = () => {
 							const mealGoal = goal?.[mealType]
 
 							return (
-								<CarouselItem key={mealType} className={cn("space-y-3", mealsWithEntries.length === 2 ? "lg:basis-1/2" : mealsWithEntries.length === 3 ? "lg:basis-1/3" : "")}>
-									<div className="space-y-0.5">
-										<div className="flex items-center justify-between">
-											<div className="font-bold text-xs capitalize">{mealType}</div>
-											<MacroWithProgress value={mealTotals.calories} goalValue={mealGoal?.calories} unit=" Cal" className="text-foreground font-mono text-xs" compact />
+								<CarouselItem key={mealType} className="pl-4 sm:basis-1/2 lg:basis-1/3">
+									<div className="rounded-lg border bg-card text-card-foreground shadow-sm h-full">
+										<div className="px-3 py-2 border-b flex flex-col gap-2 bg-muted/30">
+											<div className="flex items-center justify-between">
+												<span className="font-semibold text-sm capitalize">{mealType}</span>
+												<div className="flex items-baseline gap-1">
+													<span className="text-xs font-mono font-medium">{Math.round(mealTotals.calories)}</span>
+													{mealGoal?.calories && <span className="text-[10px] text-muted-foreground font-mono">/ {Math.round(mealGoal.calories)}</span>}
+													<span className="text-[10px] font-mono text-muted-foreground ml-0.5">cal</span>
+												</div>
+											</div>
+											<div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground font-mono uppercase tracking-wide">
+												<div className="flex gap-0.5">
+													<span className={cn(mealGoal?.protein && mealTotals.protein < mealGoal.protein ? "text-orange-500" : "")}>{Math.round(mealTotals.protein)}</span>
+													{mealGoal?.protein && <span className="opacity-50">/{Math.round(mealGoal.protein)}</span>}
+													<span>P</span>
+												</div>
+												<span className="text-border">•</span>
+												<div className="flex gap-0.5">
+													<span className={cn(mealGoal?.carbs && mealTotals.carbs > mealGoal.carbs ? "text-orange-500" : "")}>{Math.round(mealTotals.carbs)}</span>
+													{mealGoal?.carbs && <span className="opacity-50">/{Math.round(mealGoal.carbs)}</span>}
+													<span>C</span>
+												</div>
+												<span className="text-border">•</span>
+												<div className="flex gap-0.5">
+													<span className={cn(mealGoal?.fat && mealTotals.fat > mealGoal.fat ? "text-orange-500" : "")}>{Math.round(mealTotals.fat)}</span>
+													{mealGoal?.fat && <span className="opacity-50">/{Math.round(mealGoal.fat)}</span>}
+													<span>F</span>
+												</div>
+												<span className="text-border">•</span>
+												<div className="flex gap-0.5">
+													<span className={cn(mealGoal?.fiber && mealTotals.fiber < mealGoal.fiber ? "text-orange-500" : "")}>{Math.round(mealTotals.fiber)}</span>
+													{mealGoal?.fiber && <span className="opacity-50">/{Math.round(mealGoal.fiber)}</span>}
+													<span>Fi</span>
+												</div>
+											</div>
 										</div>
-										<div className="font-mono text-[10px] text-muted-foreground flex items-center gap-1.5 flex-wrap">
-											<MacroWithProgress value={mealTotals.protein} goalValue={mealGoal?.protein} unit="g P" className="text-[10px]" compact />
-											<MacroWithProgress value={mealTotals.carbs} goalValue={mealGoal?.carbs} unit="g C" className="text-[10px]" compact />
-											<MacroWithProgress value={mealTotals.fat} goalValue={mealGoal?.fat} unit="g F" className="text-[10px]" compact />
-											<MacroWithProgress value={mealTotals.fiber} goalValue={mealGoal?.fiber} unit="g Fib" className="text-[10px]" compact />
+
+										<div className="p-2 space-y-2">
+											{entries.map((entry) => {
+												const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
+												if (!food) return null
+												return <EntryItem key={entry._id} entry={entry} food={food} dropdownItems={{ edit: true, delete: true, viewFood: true }} hideMealType />
+											})}
 										</div>
-									</div>
-
-									<div className="space-y-2">
-										{entries.map((entry) => {
-											const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
-											if (!food) return null
-
-											return <EntryItem key={entry._id} entry={entry} food={food} dropdownItems={{ edit: true, delete: true, viewFood: true }} hideMealType />
-										})}
 									</div>
 								</CarouselItem>
 							)
