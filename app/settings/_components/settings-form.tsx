@@ -117,9 +117,7 @@ export const SettingsForm = () => {
 									{macro === "calories" && (
 										<div className="text-[10px] text-muted-foreground">
 											{(() => {
-												const meal = formValues[mealType as keyof typeof formValues] as
-													| { protein?: number; carbs?: number; fat?: number }
-													| undefined
+												const meal = formValues[mealType as keyof typeof formValues] as { protein?: number; carbs?: number; fat?: number } | undefined
 												const calc = calculateCaloriesFromMacros(meal?.protein, meal?.carbs, meal?.fat)
 												return calc !== undefined ? `Calculated: ${Math.round(calc)} Cal` : null
 											})()}
@@ -140,50 +138,32 @@ export const SettingsForm = () => {
 						<div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
 							<div className="grid gap-1">
 								<div className="text-muted-foreground text-sm">Calories</div>
-								<div className="font-mono text-lg">
-									{dailyTotals.calories !== undefined ? Math.round(dailyTotals.calories) : "—"}
-								</div>
-								{calculatedCalories !== undefined &&
-									dailyTotals.calories !== undefined &&
-									Math.round(dailyTotals.calories) !== Math.round(calculatedCalories) && (
-										<div className="text-[10px] text-muted-foreground">
-											From macros: {Math.round(calculatedCalories)} Cal
-										</div>
-									)}
+								<div className="font-mono text-lg">{dailyTotals.calories !== undefined ? Math.round(dailyTotals.calories) : "—"}</div>
+								{calculatedCalories !== undefined && dailyTotals.calories !== undefined && Math.round(dailyTotals.calories) !== Math.round(calculatedCalories) && (
+									<div className="text-[10px] text-muted-foreground">From macros: {Math.round(calculatedCalories)} Cal</div>
+								)}
 							</div>
 							<div className="grid gap-1">
 								<div className="text-muted-foreground text-sm">Protein</div>
-								<div className="font-mono text-lg">
-									{dailyTotals.protein !== undefined ? `${Math.round(dailyTotals.protein)}g` : "—"}
-								</div>
+								<div className="font-mono text-lg">{dailyTotals.protein !== undefined ? `${Math.round(dailyTotals.protein)}g` : "—"}</div>
 							</div>
 							<div className="grid gap-1">
 								<div className="text-muted-foreground text-sm">Carbs</div>
-								<div className="font-mono text-lg">
-									{dailyTotals.carbs !== undefined ? `${Math.round(dailyTotals.carbs)}g` : "—"}
-								</div>
+								<div className="font-mono text-lg">{dailyTotals.carbs !== undefined ? `${Math.round(dailyTotals.carbs)}g` : "—"}</div>
 							</div>
 							<div className="grid gap-1">
 								<div className="text-muted-foreground text-sm">Fat</div>
-								<div className="font-mono text-lg">
-									{dailyTotals.fat !== undefined ? `${Math.round(dailyTotals.fat)}g` : "—"}
-								</div>
+								<div className="font-mono text-lg">{dailyTotals.fat !== undefined ? `${Math.round(dailyTotals.fat)}g` : "—"}</div>
 							</div>
 							<div className="grid gap-1">
 								<div className="text-muted-foreground text-sm">Fiber</div>
-								<div className="font-mono text-lg">
-									{dailyTotals.fiber !== undefined ? `${Math.round(dailyTotals.fiber)}g` : "—"}
-								</div>
+								<div className="font-mono text-lg">{dailyTotals.fiber !== undefined ? `${Math.round(dailyTotals.fiber)}g` : "—"}</div>
 							</div>
 							{calculatedCalories !== undefined && (
 								<div className="grid gap-1">
 									<div className="text-muted-foreground text-sm">Calculated Calories</div>
-									<div className="font-mono text-lg text-blue-600 dark:text-blue-400">
-										{Math.round(calculatedCalories)} Cal
-									</div>
-									<div className="text-[10px] text-muted-foreground">
-										(Protein × 4 + Carbs × 4 + Fat × 9)
-									</div>
+									<div className="font-mono text-lg text-blue-600 dark:text-blue-400">{Math.round(calculatedCalories)} Cal</div>
+									<div className="text-[10px] text-muted-foreground">(Protein × 4 + Carbs × 4 + Fat × 9)</div>
 								</div>
 							)}
 						</div>

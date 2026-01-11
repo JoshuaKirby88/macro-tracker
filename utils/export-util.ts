@@ -14,12 +14,7 @@ export const nutritionLabels: Record<NutritionField, string> = {
 
 export const exportUtil = {
 	nutritionLabels,
-	generateMarkdown(input: {
-		entries: Entry[]
-		foods: Food[]
-		selectedMeals: Entry["mealType"][]
-		selectedNutrition: NutritionField[]
-	}): string {
+	generateMarkdown(input: { entries: Entry[]; foods: Food[]; selectedMeals: Entry["mealType"][]; selectedNutrition: NutritionField[] }): string {
 		const { entries, foods, selectedMeals, selectedNutrition } = input
 
 		// Filter entries by selected meals

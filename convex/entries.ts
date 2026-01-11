@@ -14,12 +14,18 @@ export const create = mutation({
 		if (!food || food.userId !== identity.subject) throw new Error("Food not found")
 
 		const now = Date.now()
+		const quantity = args.actualQuantity / food.servingSize
 
 		const entryId = await ctx.db.insert("entry", {
 			userId: identity.subject,
 			createdAt: now,
 			updatedAt: now,
-			...args,
+			foodId: args.foodId,
+			quantity,
+			actualQuantity: args.actualQuantity,
+			entryDate: args.entryDate,
+			mealType: args.mealType,
+			note: args.note,
 		})
 
 		await ctx.db.patch(food._id, { touchedAt: now })
@@ -56,22 +62,25 @@ export const update = mutation({
 		const existing = await ctx.db.get(args.id)
 		if (!existing || existing.userId !== identity.subject) throw new Error("Entry not found")
 
-		const food = await ctx.db.get(args.foodId)
+		const foodId = args.foodId ?? existing.foodId
+		const food = await ctx.db.get(foodId)
 		if (!food || food.userId !== identity.subject) throw new Error("Food not found")
 
 		const now = Date.now()
+		const quantity = args.actualQuantity !== undefined ? args.actualQuantity / food.servingSize : (args.quantity ?? existing.quantity)
 
 		await ctx.db.patch(args.id, {
-			foodId: args.foodId,
-			quantity: args.quantity,
-			entryDate: args.entryDate,
-			mealType: args.mealType,
-			note: args.note,
+			foodId,
+			quantity,
+			actualQuantity: args.actualQuantity ?? existing.actualQuantity,
+			entryDate: args.entryDate ?? existing.entryDate,
+			mealType: args.mealType ?? existing.mealType,
+			note: args.note ?? existing.note,
 			updatedAt: now,
 		})
 
-		if (existing.foodId !== args.foodId) {
-			await ctx.db.patch(args.foodId, { touchedAt: now })
+		if (existing.foodId !== foodId) {
+			await ctx.db.patch(foodId, { touchedAt: now })
 		}
 	},
 })

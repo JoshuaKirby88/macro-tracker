@@ -29,9 +29,18 @@ export const FoodAdder = () => {
 	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
 	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
+	const foods = useQuery(api.foods.forUser)
 
-	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), quantity: 1 } })
+	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), actualQuantity: 0 } })
 	const selectedFoodId = form.watch("foodId")
+
+	const selectedFood = foods?.find((f) => f._id === selectedFoodId)
+
+	useEffect(() => {
+		if (selectedFood) {
+			form.setValue("actualQuantity", selectedFood.servingSize)
+		}
+	}, [selectedFood, form.setValue])
 
 	useEffect(() => {
 		const newFoodId = searchParams?.get("newFoodId")
@@ -41,7 +50,7 @@ export const FoodAdder = () => {
 				window.history.replaceState(null, "", window.location.pathname)
 			}
 		}
-	}, [searchParams])
+	}, [searchParams, form.getValues, form.setValue])
 
 	useEffect(() => {
 		if (!entriesWithFoods?.entries?.length) return
@@ -51,7 +60,7 @@ export const FoodAdder = () => {
 		if (currentMeal === timeDefault) {
 			form.setValue("mealType", latest.mealType)
 		}
-	}, [entriesWithFoods, form])
+	}, [entriesWithFoods, form.getValues, form.setValue])
 
 	const onSubmit = async (input: z.infer<typeof config.schema>) => {
 		try {
@@ -71,7 +80,7 @@ export const FoodAdder = () => {
 						<Controller
 							name="foodId"
 							control={form.control}
-							render={({ field }) => <FoodCommand foodId={field.value} onChange={(val) => field.onChange(val)} onSelect={() => setTimeout(() => form.setFocus("quantity"), 0)} />}
+							render={({ field }) => <FoodCommand foodId={field.value} onChange={(val) => field.onChange(val)} onSelect={() => setTimeout(() => form.setFocus("actualQuantity"), 0)} />}
 						/>
 					</div>
 
@@ -88,8 +97,8 @@ export const FoodAdder = () => {
 
 				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
 					<div className="grid gap-1">
-						<span className="text-muted-foreground text-sm">Quantity</span>
-						<FormNumberInput form={form} value="quantity" />
+						<span className="text-muted-foreground text-sm">{selectedFood ? `Quantity (${selectedFood.servingUnit})` : "Quantity"}</span>
+						<FormNumberInput form={form} value="actualQuantity" />
 					</div>
 
 					<div className="grid gap-1">

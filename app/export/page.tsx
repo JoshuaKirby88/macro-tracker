@@ -134,13 +134,7 @@ export default function ExportPage() {
 								</Button>
 							</PopoverTrigger>
 							<PopoverContent className="w-auto p-0" align="start">
-								<Calendar
-									mode="range"
-									defaultMonth={dateRange?.from}
-									selected={dateRange}
-									onSelect={setDateRange}
-									numberOfMonths={2}
-								/>
+								<Calendar mode="range" defaultMonth={dateRange?.from} selected={dateRange} onSelect={setDateRange} numberOfMonths={2} />
 							</PopoverContent>
 						</Popover>
 					</div>

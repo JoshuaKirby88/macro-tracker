@@ -1,7 +1,6 @@
 # Do
 
 - [ ] Add custom metrics: erythritol, sucralose…
-- [ ] Add search and extraction for common foods
 - [ ] Create food dataset
 - [ ] Show summaries/trends like in Apple health
 

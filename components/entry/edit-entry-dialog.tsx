@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -15,7 +15,14 @@ import { Label } from "../shadcn/label"
 
 export const EditEntryDialog = (props: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; entry: Entry }) => {
 	const updateEntry = useMutation(api.entries.update)
-	const form = useForm({ resolver: zodResolver(updateEntrySchema), defaultValues: props.entry })
+	const food = useQuery(api.foods.byId, { id: props.entry.foodId })
+
+	const defaultActualQuantity = props.entry.actualQuantity ?? (food?.servingSize ? props.entry.quantity * food.servingSize : undefined)
+
+	const form = useForm({
+		resolver: zodResolver(updateEntrySchema),
+		defaultValues: { ...props.entry, actualQuantity: defaultActualQuantity },
+	})
 
 	const onSubmit = async (input: z.infer<typeof updateEntrySchema>) => {
 		try {
@@ -37,8 +44,8 @@ export const EditEntryDialog = (props: { isOpen: boolean; setIsOpen: (isOpen: bo
 				<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid gap-4">
 					<div className="grid grid-cols-1 gap-4">
 						<div className="grid gap-1">
-							<Label className="text-muted-foreground text-sm">Quantity</Label>
-							<FormNumberInput form={form} value="quantity" />
+							<Label className="text-muted-foreground text-sm">Quantity ({food?.servingUnit ?? "units"})</Label>
+							<FormNumberInput form={form} value="actualQuantity" />
 						</div>
 
 						<div className="grid gap-1">

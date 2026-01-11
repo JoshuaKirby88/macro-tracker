@@ -16,36 +16,21 @@ const getProgressColor = (percentage: number): string => {
 	return "bg-orange-500"
 }
 
-const MiniMacro = ({ 
-	label, 
-	value, 
-	goal, 
-	unit 
-}: { 
-	label: string
-	value: number
-	goal?: number
-	unit?: string 
-}) => {
+const MiniMacro = ({ label, value, goal, unit }: { label: string; value: number; goal?: number; unit?: string }) => {
 	const percent = goal ? Math.min((value / goal) * 100, 100) : 0
-	
+
 	return (
 		<div className="flex flex-col min-w-[3.5rem]">
 			<div className="flex items-end justify-between text-[10px] leading-none mb-1.5">
 				<span className="font-semibold text-muted-foreground uppercase">{label}</span>
-				<span className={cn(
-					"font-mono font-medium", 
-					goal && value > goal ? "text-orange-500" : "text-foreground"
-				)}>
-					{Math.round(value)}{unit}
+				<span className={cn("font-mono font-medium", goal && value > goal ? "text-orange-500" : "text-foreground")}>
+					{Math.round(value)}
+					{unit}
 				</span>
 			</div>
 			{goal && (
 				<div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
-					<div 
-						className={cn("h-full rounded-full transition-all", getProgressColor(percent))} 
-						style={{ width: `${percent}%` }} 
-					/>
+					<div className={cn("h-full rounded-full transition-all", getProgressColor(percent))} style={{ width: `${percent}%` }} />
 				</div>
 			)}
 		</div>
@@ -112,18 +97,14 @@ export const TodayEntries = () => {
 										<span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Calories</span>
 										<span className="font-mono text-sm font-bold">
 											{Math.round(totals.calories)}
-											{dailyGoals.calories && (
-												<span className="text-[10px] font-normal text-muted-foreground ml-1">
-													/ {Math.round(dailyGoals.calories)}
-												</span>
-											)}
+											{dailyGoals.calories && <span className="text-[10px] font-normal text-muted-foreground ml-1">/ {Math.round(dailyGoals.calories)}</span>}
 										</span>
 									</div>
 									{dailyGoals.calories && (
 										<div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
-											<div 
-												className={cn("h-full rounded-full transition-all", getProgressColor((totals.calories / dailyGoals.calories) * 100))} 
-												style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }} 
+											<div
+												className={cn("h-full rounded-full transition-all", getProgressColor((totals.calories / dailyGoals.calories) * 100))}
+												style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
 											/>
 										</div>
 									)}

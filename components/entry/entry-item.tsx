@@ -25,6 +25,7 @@ export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Par
 	const protein = Math.round(props.food.protein * qty)
 	const carbs = Math.round(props.food.carbs * qty)
 	const fat = Math.round(props.food.fat * qty)
+	const displayQuantity = props.entry.actualQuantity ?? Math.round(props.food.servingSize * props.entry.quantity)
 
 	return (
 		<>
@@ -47,14 +48,12 @@ export const EntryItem = (props: { entry: Entry; food: Food; dropdownItems?: Par
 							</div>
 							<div className="mt-0.5 flex items-baseline justify-between">
 								<div className="space-x-2 text-muted-foreground text-xs">
-									{[!props.hideMealType && capitalize(props.entry.mealType), `${Math.round(props.food.servingSize * props.entry.quantity)} ${props.food.servingUnit}`]
-										.filter(Boolean)
-										.map((str, i) => (
-											<React.Fragment key={i}>
-												<span key={i}>{str}</span>
-												<span className="last:hidden">|</span>
-											</React.Fragment>
-										))}
+									{[!props.hideMealType && capitalize(props.entry.mealType), `${displayQuantity} ${props.food.servingUnit}`].filter(Boolean).map((str, i) => (
+										<React.Fragment key={i}>
+											<span key={i}>{str}</span>
+											<span className="last:hidden">|</span>
+										</React.Fragment>
+									))}
 								</div>
 								<div className="shrink-0 text-[10px] text-muted-foreground">
 									{protein}g P · {carbs}g C · {fat}g F
