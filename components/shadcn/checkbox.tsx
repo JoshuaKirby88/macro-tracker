@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { CheckIcon } from "lucide-react"
+import * as React from "react"
 import { cn } from "@/utils/cn"
 
 const Checkbox = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button"> & { checked?: boolean; onCheckedChange?: (checked: boolean) => void }>(

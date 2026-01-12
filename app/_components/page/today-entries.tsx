@@ -20,16 +20,16 @@ const MiniMacro = ({ label, value, goal, unit }: { label: string; value: number;
 	const percent = goal ? Math.min((value / goal) * 100, 100) : 0
 
 	return (
-		<div className="flex flex-col min-w-[3.5rem]">
-			<div className="flex items-end justify-between text-[10px] leading-none mb-1.5">
+		<div className="flex min-w-[3.5rem] flex-col">
+			<div className="mb-1.5 flex items-end justify-between text-[10px] leading-none">
 				<span className="font-semibold text-muted-foreground uppercase">{label}</span>
-				<span className={cn("font-mono font-medium", goal && value > goal ? "text-orange-500" : "text-foreground")}>
+				<span className={cn("font-medium font-mono", goal && value > goal ? "text-orange-500" : "text-foreground")}>
 					{Math.round(value)}
 					{unit}
 				</span>
 			</div>
 			{goal && (
-				<div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+				<div className="h-1 w-full overflow-hidden rounded-full bg-secondary">
 					<div className={cn("h-full rounded-full transition-all", getProgressColor(percent))} style={{ width: `${percent}%` }} />
 				</div>
 			)}
@@ -79,8 +79,8 @@ export const TodayEntries = () => {
 		<Carousel opts={{ duration: 20, startIndex: entryUtil.mealTypes.indexOf(entryUtil.getMealType(new Date())) }}>
 			<Card className="border-0 shadow-none sm:border sm:shadow-sm">
 				<CardContent className="p-0 sm:p-6">
-					<div className="flex flex-col gap-4 mb-4 px-4 pt-4 sm:px-0 sm:pt-0">
-						<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+					<div className="mb-4 flex flex-col gap-4 px-4 pt-4 sm:px-0 sm:pt-0">
+						<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 							<div className="flex items-center justify-between">
 								<CardTitle className="text-lg">Today's entries</CardTitle>
 								<div className="flex gap-1 lg:hidden">
@@ -90,18 +90,18 @@ export const TodayEntries = () => {
 							</div>
 
 							{/* Ultra Compact Summary */}
-							<div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm bg-secondary/10 rounded-lg p-3 sm:p-0 sm:bg-transparent">
+							<div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-lg bg-secondary/10 p-3 text-sm sm:bg-transparent sm:p-0">
 								{/* Main Calories */}
-								<div className="flex flex-col min-w-[6rem]">
-									<div className="flex items-baseline justify-between mb-1.5">
-										<span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Calories</span>
-										<span className="font-mono text-sm font-bold">
+								<div className="flex min-w-[6rem] flex-col">
+									<div className="mb-1.5 flex items-baseline justify-between">
+										<span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">Calories</span>
+										<span className="font-bold font-mono text-sm">
 											{Math.round(totals.calories)}
-											{dailyGoals.calories && <span className="text-[10px] font-normal text-muted-foreground ml-1">/ {Math.round(dailyGoals.calories)}</span>}
+											{dailyGoals.calories && <span className="ml-1 font-normal text-[10px] text-muted-foreground">/ {Math.round(dailyGoals.calories)}</span>}
 										</span>
 									</div>
 									{dailyGoals.calories && (
-										<div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+										<div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
 											<div
 												className={cn("h-full rounded-full transition-all", getProgressColor((totals.calories / dailyGoals.calories) * 100))}
 												style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
@@ -111,10 +111,10 @@ export const TodayEntries = () => {
 								</div>
 
 								{/* Divider for desktop */}
-								<div className="hidden sm:block h-8 w-px bg-border/50" />
+								<div className="hidden h-8 w-px bg-border/50 sm:block" />
 
 								{/* Macros Row */}
-								<div className="flex items-center gap-4 flex-1 sm:flex-none overflow-x-auto hide-scrollbar pb-1 sm:pb-0">
+								<div className="hide-scrollbar flex flex-1 items-center gap-4 overflow-x-auto pb-1 sm:flex-none sm:pb-0">
 									<MiniMacro label="Protein" value={totals.protein} goal={dailyGoals.protein} unit="g" />
 									<MiniMacro label="Carbs" value={totals.carbs} goal={dailyGoals.carbs} unit="g" />
 									<MiniMacro label="Fat" value={totals.fat} goal={dailyGoals.fat} unit="g" />
@@ -145,17 +145,17 @@ export const TodayEntries = () => {
 
 							return (
 								<CarouselItem key={mealType} className="pl-4 sm:basis-1/2 lg:basis-1/3">
-									<div className="rounded-lg border bg-card text-card-foreground shadow-sm h-full">
-										<div className="px-3 py-2 border-b flex flex-col gap-2 bg-muted/30">
+									<div className="h-full rounded-lg border bg-card text-card-foreground shadow-sm">
+										<div className="flex flex-col gap-2 border-b bg-muted/30 px-3 py-2">
 											<div className="flex items-center justify-between">
 												<span className="font-semibold text-sm capitalize">{mealType}</span>
 												<div className="flex items-baseline gap-1">
-													<span className="text-xs font-mono font-medium">{Math.round(mealTotals.calories)}</span>
-													{mealGoal?.calories && <span className="text-[10px] text-muted-foreground font-mono">/ {Math.round(mealGoal.calories)}</span>}
-													<span className="text-[10px] font-mono text-muted-foreground ml-0.5">cal</span>
+													<span className="font-medium font-mono text-xs">{Math.round(mealTotals.calories)}</span>
+													{mealGoal?.calories && <span className="font-mono text-[10px] text-muted-foreground">/ {Math.round(mealGoal.calories)}</span>}
+													<span className="ml-0.5 font-mono text-[10px] text-muted-foreground">cal</span>
 												</div>
 											</div>
-											<div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground font-mono uppercase tracking-wide">
+											<div className="flex items-center justify-between gap-2 font-mono text-[10px] text-muted-foreground uppercase tracking-wide">
 												<div className="flex gap-0.5">
 													<span className={cn(mealGoal?.protein && mealTotals.protein < mealGoal.protein ? "text-orange-500" : "")}>{Math.round(mealTotals.protein)}</span>
 													{mealGoal?.protein && <span className="opacity-50">/{Math.round(mealGoal.protein)}</span>}
@@ -182,7 +182,7 @@ export const TodayEntries = () => {
 											</div>
 										</div>
 
-										<div className="p-2 space-y-2">
+										<div className="space-y-2 p-2">
 											{entries.map((entry) => {
 												const food = entriesWithFoods.foods.find((f) => f._id === entry.foodId)
 												if (!food) return null

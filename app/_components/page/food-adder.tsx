@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "convex/react"
-import { PenIcon, PlusIcon } from "lucide-react"
+import { PenIcon, PlusIcon, SearchIcon } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useEffect } from "react"
@@ -85,6 +85,10 @@ export const FoodAdder = () => {
 					</div>
 
 					<div className="flex gap-2">
+						<Link href="/search" className={buttonVariants({ variant: "outline", size: "icon" })}>
+							<SearchIcon />
+						</Link>
+
 						<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
 							<PenIcon />
 						</Link>

@@ -1,5 +1,5 @@
-import type { Entry, Food } from "@/convex/schema"
 import { format } from "date-fns"
+import type { Entry, Food } from "@/convex/schema"
 
 export type NutritionField = "calories" | "protein" | "fat" | "carbs" | "sugar" | "fiber"
 

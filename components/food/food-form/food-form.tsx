@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -46,13 +46,66 @@ const config = {
 
 export const FoodForm = (props: { type: "create" } | { type: "update"; food: Food }) => {
 	const router = useRouter()
+	const searchParams = useSearchParams()
 	const createFood = useMutation(api.foods.create)
 	const updateFood = useMutation(api.foods.update)
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
 	const [servingSizeDelta, setServingSizeDelta] = useState<{ prev: number; next: number } | null>(null)
 
 	const schema = props.type === "create" ? config.createFoodSchema : updateFoodSchema
-	const form = useForm({ resolver: zodResolver(schema), defaultValues: props.type === "create" ? { image: config.defaults.image } : props.food })
+
+	const getPrefilledDefaults = () => {
+		if (props.type === "update") return props.food
+		if (!searchParams) return { image: config.defaults.image }
+
+		const getParam = (key: string): string | undefined => searchParams.get(key) ?? undefined
+
+		return {
+			name: getParam("name"),
+			brand: getParam("brand"),
+			description: getParam("description"),
+			servingSize: getParam("servingSize") ? Number(getParam("servingSize")) : undefined,
+			servingUnit: getParam("servingUnit") || config.defaults.servingUnit,
+			calories: getParam("calories") ? Number(getParam("calories")) : undefined,
+			protein: getParam("protein") ? Number(getParam("protein")) : undefined,
+			fat: getParam("fat") ? Number(getParam("fat")) : undefined,
+			carbs: getParam("carbs") ? Number(getParam("carbs")) : undefined,
+			fiber: getParam("fiber") ? Number(getParam("fiber")) : undefined,
+			sugar: getParam("sugar") ? Number(getParam("sugar")) : undefined,
+			image: config.defaults.image,
+		}
+	}
+
+	const form = useForm({ resolver: zodResolver(schema), defaultValues: getPrefilledDefaults() })
+
+	useEffect(() => {
+		if (props.type === "create" && searchParams) {
+			const getParam = (key: string): string | undefined => searchParams.get(key) ?? undefined
+
+			const name = getParam("name")
+			if (name) form.setValue("name", name)
+			const brand = getParam("brand")
+			if (brand) form.setValue("brand", brand)
+			const description = getParam("description")
+			if (description) form.setValue("description", description)
+			const servingSize = getParam("servingSize")
+			if (servingSize) form.setValue("servingSize", Number(servingSize))
+			const servingUnit = getParam("servingUnit")
+			if (servingUnit) form.setValue("servingUnit", servingUnit)
+			const calories = getParam("calories")
+			if (calories) form.setValue("calories", Number(calories))
+			const protein = getParam("protein")
+			if (protein) form.setValue("protein", Number(protein))
+			const fat = getParam("fat")
+			if (fat) form.setValue("fat", Number(fat))
+			const carbs = getParam("carbs")
+			if (carbs) form.setValue("carbs", Number(carbs))
+			const fiber = getParam("fiber")
+			if (fiber) form.setValue("fiber", Number(fiber))
+			const sugar = getParam("sugar")
+			if (sugar) form.setValue("sugar", Number(sugar))
+		}
+	}, [searchParams, props.type, form.setValue])
 
 	const onSubmit = async (inputUnion: z.infer<typeof schema>) => {
 		try {

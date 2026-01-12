@@ -162,7 +162,7 @@ export const SettingsForm = () => {
 							{calculatedCalories !== undefined && (
 								<div className="grid gap-1">
 									<div className="text-muted-foreground text-sm">Calculated Calories</div>
-									<div className="font-mono text-lg text-blue-600 dark:text-blue-400">{Math.round(calculatedCalories)} Cal</div>
+									<div className="font-mono text-blue-600 text-lg dark:text-blue-400">{Math.round(calculatedCalories)} Cal</div>
 									<div className="text-[10px] text-muted-foreground">(Protein × 4 + Carbs × 4 + Fat × 9)</div>
 								</div>
 							)}

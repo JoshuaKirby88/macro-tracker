@@ -1,7 +1,6 @@
 # Do
 
 - [ ] Add custom metrics: erythritol, sucralose…
-- [ ] Create food dataset
 - [ ] Show summaries/trends like in Apple health
 
 # Image -> Macros

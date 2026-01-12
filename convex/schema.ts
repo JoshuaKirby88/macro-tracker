@@ -37,7 +37,7 @@ export const entrySchema = z.object({
 	createdAt: z.number(),
 	updatedAt: z.number(),
 })
-export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true }).extend({
+export const createEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true, quantity: true }).extend({
 	actualQuantity: z.number(),
 })
 export const updateEntrySchema = entrySchema.omit({ userId: true, createdAt: true, updatedAt: true }).partial()
