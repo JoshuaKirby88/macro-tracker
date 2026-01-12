@@ -24,6 +24,7 @@ For detailed documentation about this repository, see [REPO.md](./REPO.md).
 - Convex for backend (queries in `convex/` directory)
 - Clerk for authentication (use `useConvexAuth()` hook, not Clerk's `useAuth()`)
 - shadcn/ui components in `components/shadcn/`
+- Radix UI imports use pattern: `import { ComponentName as Primitive } from "radix-ui"`
 - Zod for validation
 
 ### Project Structure
