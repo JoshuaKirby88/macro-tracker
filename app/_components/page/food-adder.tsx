@@ -125,7 +125,18 @@ export const FoodAdder = () => {
 						</div>
 
 						<div className="flex gap-2">
-							<Button variant="outline" size="icon" onClick={() => setIsPublicSearchOpen(true)} title="Search USDA (⌘K)">
+							<Button
+								variant="outline"
+								size="icon"
+								onClick={() => setIsPublicSearchOpen(true)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										e.preventDefault()
+										setIsPublicSearchOpen(true)
+									}
+								}}
+								title="Search USDA (⌘K)"
+							>
 								<SearchIcon />
 							</Button>
 

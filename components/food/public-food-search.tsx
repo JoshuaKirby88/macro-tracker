@@ -51,6 +51,7 @@ export const PublicFoodSearch = (props: { onSelect: (food: PublicFood) => void; 
 		setResults([])
 	}
 
+	const shouldRenderTrigger = props.trigger !== undefined || props.open === undefined
 	const Trigger = props.trigger ?? (
 		<Button variant="outline" className="w-full justify-start gap-2 px-3">
 			Search public foods...
@@ -59,7 +60,7 @@ export const PublicFoodSearch = (props: { onSelect: (food: PublicFood) => void; 
 
 	return (
 		<>
-			<div onClick={() => setIsOpen(true)}>{Trigger}</div>
+			{shouldRenderTrigger && <div onClick={() => setIsOpen(true)}>{Trigger}</div>}
 			<CommandDialog open={isOpen} onOpenChange={setIsOpen} className="w-[35rem]">
 				<CommandInput placeholder="Type to search USDA database..." value={searchQuery} onValueChange={setSearchQuery} />
 				<CommandList>
