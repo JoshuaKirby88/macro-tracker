@@ -7,8 +7,10 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 
 export type { PublicFood } from "@/components/food/public-food-item"
 
-export const PublicFoodSearch = (props: { onSelect: (food: PublicFood) => void; trigger?: React.ReactNode }) => {
-	const [isOpen, setIsOpen] = React.useState(false)
+export const PublicFoodSearch = (props: { onSelect: (food: PublicFood) => void; trigger?: React.ReactNode; open?: boolean; onOpenChange?: (open: boolean) => void }) => {
+	const [internalOpen, setInternalOpen] = React.useState(false)
+	const isOpen = props.open ?? internalOpen
+	const setIsOpen = props.onOpenChange ?? setInternalOpen
 	const [searchQuery, setSearchQuery] = React.useState("")
 	const [results, setResults] = React.useState<PublicFood[]>([])
 	const [isLoading, setIsLoading] = React.useState(false)

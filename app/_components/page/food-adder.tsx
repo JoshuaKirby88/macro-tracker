@@ -5,11 +5,12 @@ import { useMutation, useQuery } from "convex/react"
 import { PenIcon, PlusIcon, SearchIcon } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
 import { FoodCommand } from "@/components/food/food-command"
+import { type PublicFood, PublicFoodSearch } from "@/components/food/public-food-search"
 import { FormNumberInput } from "@/components/form-number-input"
 import { Button, buttonVariants } from "@/components/shadcn/button"
 import { Card } from "@/components/shadcn/card"
@@ -28,13 +29,49 @@ export const FoodAdder = () => {
 	const searchParams = useSearchParams()
 	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
+	const createFood = useMutation(api.foods.create)
 	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
 	const foods = useQuery(api.foods.forUser)
+	const [isPublicSearchOpen, setIsPublicSearchOpen] = React.useState(false)
 
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), actualQuantity: 0 } })
 	const selectedFoodId = form.watch("foodId")
 
 	const selectedFood = foods?.find((f) => f._id === selectedFoodId)
+
+	React.useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+				e.preventDefault()
+				setIsPublicSearchOpen(true)
+			}
+		}
+		window.addEventListener("keydown", handleKeyDown)
+		return () => window.removeEventListener("keydown", handleKeyDown)
+	}, [])
+
+	const handlePublicFoodSelect = async (publicFood: PublicFood) => {
+		try {
+			const newFoodId = await createFood({
+				name: publicFood.name,
+				image: "onigiri",
+				brand: publicFood.brand,
+				description: publicFood.description,
+				servingSize: publicFood.servingSize ?? 1,
+				servingUnit: publicFood.servingUnit ?? "servings",
+				calories: publicFood.calories ?? 0,
+				protein: publicFood.protein ?? 0,
+				fat: publicFood.fat ?? 0,
+				carbs: publicFood.carbs ?? 0,
+				sugar: publicFood.sugar ?? 0,
+				fiber: publicFood.fiber ?? 0,
+			})
+			form.setValue("foodId", newFoodId)
+			toast.success(`Imported "${publicFood.name}"`)
+		} catch (error) {
+			toast.error(error instanceof Error ? error.message : "Failed to import food")
+		}
+	}
 
 	useEffect(() => {
 		if (selectedFood) {
@@ -73,65 +110,71 @@ export const FoodAdder = () => {
 	}
 
 	return (
-		<Card className="-translate-x-1/2 fixed bottom-3 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
-			<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
-				<div className="flex min-w-0 gap-2">
-					<div className="min-w-0 grow">
-						<Controller
-							name="foodId"
-							control={form.control}
-							render={({ field }) => <FoodCommand foodId={field.value} onChange={(val) => field.onChange(val)} onSelect={() => setTimeout(() => form.setFocus("actualQuantity"), 0)} />}
-						/>
+		<>
+			<Card className="-translate-x-1/2 fixed bottom-3 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
+				<form onSubmit={form.handleSubmit(onSubmit, toastFormError)} className="grid w-full gap-3">
+					<div className="flex min-w-0 gap-2">
+						<div className="min-w-0 grow">
+							<Controller
+								name="foodId"
+								control={form.control}
+								render={({ field }) => (
+									<FoodCommand foodId={field.value} onChange={(val) => field.onChange(val)} onSelect={() => setTimeout(() => form.setFocus("actualQuantity"), 0)} />
+								)}
+							/>
+						</div>
+
+						<div className="flex gap-2">
+							<Button variant="outline" size="icon" onClick={() => setIsPublicSearchOpen(true)} title="Search USDA (⌘K)">
+								<SearchIcon />
+							</Button>
+
+							<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
+								<PenIcon />
+							</Link>
+
+							<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
+								<PlusIcon />
+							</Link>
+						</div>
 					</div>
 
-					<div className="flex gap-2">
-						<Link href="/search" className={buttonVariants({ variant: "outline", size: "icon" })}>
-							<SearchIcon />
-						</Link>
+					<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
+						<div className="grid gap-1">
+							<span className="text-muted-foreground text-sm">{selectedFood ? `Quantity (${selectedFood.servingUnit})` : "Quantity"}</span>
+							<FormNumberInput form={form} value="actualQuantity" />
+						</div>
 
-						<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
-							<PenIcon />
-						</Link>
+						<div className="grid gap-1">
+							<span className="text-muted-foreground text-sm">Meal</span>
+							<Controller
+								control={form.control}
+								name="mealType"
+								render={({ field }) => (
+									<Select value={field.value} onValueChange={field.onChange}>
+										<SelectTrigger className="w-full capitalize">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{entryUtil.mealTypes.map((mealType) => (
+												<SelectItem key={mealType} value={mealType} className="capitalize">
+													{mealType}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								)}
+							/>
+						</div>
 
-						<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
-							<PlusIcon />
-						</Link>
+						<Button type="submit" isLoading={form.formState.isSubmitting}>
+							{form.formState.isSubmitting ? "Tracking…" : "Track"}
+						</Button>
 					</div>
-				</div>
+				</form>
+			</Card>
 
-				<div className={`grid grid-cols-3 items-end gap-2 ${!selectedFoodId ? "hidden" : ""}`}>
-					<div className="grid gap-1">
-						<span className="text-muted-foreground text-sm">{selectedFood ? `Quantity (${selectedFood.servingUnit})` : "Quantity"}</span>
-						<FormNumberInput form={form} value="actualQuantity" />
-					</div>
-
-					<div className="grid gap-1">
-						<span className="text-muted-foreground text-sm">Meal</span>
-						<Controller
-							control={form.control}
-							name="mealType"
-							render={({ field }) => (
-								<Select value={field.value} onValueChange={field.onChange}>
-									<SelectTrigger className="w-full capitalize">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{entryUtil.mealTypes.map((mealType) => (
-											<SelectItem key={mealType} value={mealType} className="capitalize">
-												{mealType}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							)}
-						/>
-					</div>
-
-					<Button type="submit" isLoading={form.formState.isSubmitting}>
-						{form.formState.isSubmitting ? "Tracking…" : "Track"}
-					</Button>
-				</div>
-			</form>
-		</Card>
+			<PublicFoodSearch open={isPublicSearchOpen} onOpenChange={setIsPublicSearchOpen} onSelect={handlePublicFoodSelect} />
+		</>
 	)
 }
