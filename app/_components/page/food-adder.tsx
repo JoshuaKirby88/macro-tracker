@@ -39,16 +39,6 @@ export const FoodAdder = () => {
 
 	const selectedFood = foods?.find((f) => f._id === selectedFoodId)
 
-	React.useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-				e.preventDefault()
-				setIsPublicSearchOpen(true)
-			}
-		}
-		window.addEventListener("keydown", handleKeyDown)
-		return () => window.removeEventListener("keydown", handleKeyDown)
-	}, [])
 
 	const handlePublicFoodSelect = async (publicFood: PublicFood) => {
 		try {
@@ -125,20 +115,20 @@ export const FoodAdder = () => {
 						</div>
 
 						<div className="flex gap-2">
-							<Button
-								variant="outline"
-								size="icon"
-								onClick={() => setIsPublicSearchOpen(true)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter" || e.key === " ") {
-										e.preventDefault()
-										setIsPublicSearchOpen(true)
-									}
-								}}
-								title="Search USDA (⌘K)"
-							>
-								<SearchIcon />
-							</Button>
+					<Button
+						variant="outline"
+						size="icon"
+						onClick={() => setIsPublicSearchOpen(true)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault()
+								setIsPublicSearchOpen(true)
+							}
+						}}
+						title="Search USDA"
+					>
+						<SearchIcon />
+					</Button>
 
 							<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
 								<PenIcon />
