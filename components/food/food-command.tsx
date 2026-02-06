@@ -30,7 +30,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 
 	return (
 		<>
-			<Button variant="outline" className="flex w-full justify-start px-3 text-sm" onClick={() => setIsOpen(true)}>
+			<Button variant="outline" className="relative flex w-full justify-start px-3 text-sm" onClick={() => setIsOpen(true)} title="Select food (⌘K)" aria-label="Select food (⌘K)">
 				{selectedFood ? (
 					<>
 						<Image src={GLOBALS.thiings(selectedFood.image)} alt={selectedFood.name} width={20} height={20} />
@@ -40,7 +40,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 					<span className="flex w-full items-center gap-2 text-muted-foreground">
 						<SearchIcon />
 						Search foods...
-						<kbd className="ml-auto flex items-center rounded border px-1 font-[inherit] text-xs">⌘K</kbd>
+						<kbd className="ml-auto hidden items-center rounded border px-1 font-[inherit] text-xs md:flex">⌘K</kbd>
 					</span>
 				)}
 			</Button>

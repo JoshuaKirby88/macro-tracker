@@ -9,6 +9,7 @@ import { SFProRoundedSemibold } from "@/components/fonts/fonts"
 import { Toaster } from "@/components/shadcn/sonner"
 import { cn } from "@/utils/cn"
 import { GLOBALS } from "@/utils/globals"
+import { KeyboardShortcuts } from "./_components/layout/keyboard-shortcuts"
 import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
 import { ReactQueryProvider } from "./_components/layout/providers/react-query-provider"
@@ -61,6 +62,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
+						<KeyboardShortcuts />
 						<ReactQueryProvider>
 							<ConvexProvider>
 								<header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-background p-4">
