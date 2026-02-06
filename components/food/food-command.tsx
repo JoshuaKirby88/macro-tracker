@@ -2,19 +2,29 @@ import { useQuery } from "convex/react"
 import { SearchIcon } from "lucide-react"
 import Image from "next/image"
 import * as React from "react"
+import { KeyBadge } from "@/components/key-badge"
 import { Button } from "@/components/shadcn/button"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/shadcn/command"
 import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
 import { GLOBALS } from "@/utils/globals"
+import { getShortcutLabel } from "@/utils/shortcuts"
 
-export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void; onSelect?: () => void }) => {
+export type FoodCommandHandle = {
+	open: () => void
+}
+
+export const FoodCommand = React.forwardRef<FoodCommandHandle, { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void; onSelect?: () => void; shortcutKey?: string }>((props, ref) => {
 	const foods = useQuery(api.foods.forUser, {})
 	const [isOpen, setIsOpen] = React.useState(false)
 	const [inputValue, setInputValue] = React.useState("")
 	const selectedFood = foods?.find((f) => f._id === props.foodId)
 	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
 	const listRef = React.useRef<HTMLDivElement | null>(null)
+
+	React.useImperativeHandle(ref, () => ({
+		open: () => setIsOpen(true),
+	}))
 
 	React.useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -30,7 +40,13 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 
 	return (
 		<>
-			<Button variant="outline" className="flex w-full justify-start px-3 text-sm" onClick={() => setIsOpen(true)}>
+			<Button
+				variant="outline"
+				className="relative flex w-full justify-start px-3 text-sm"
+				onClick={() => setIsOpen(true)}
+				title={props.shortcutKey ? `Select food (${getShortcutLabel(props.shortcutKey)})` : undefined}
+				aria-label={props.shortcutKey ? `Select food (${getShortcutLabel(props.shortcutKey)})` : undefined}
+			>
 				{selectedFood ? (
 					<>
 						<Image src={GLOBALS.thiings(selectedFood.image)} alt={selectedFood.name} width={20} height={20} />
@@ -43,6 +59,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 						<kbd className="ml-auto flex items-center rounded border px-1 font-[inherit] text-xs">⌘K</kbd>
 					</span>
 				)}
+				{props.shortcutKey ? <KeyBadge label={props.shortcutKey} /> : null}
 			</Button>
 
 			<CommandDialog open={isOpen} onOpenChange={(isOpen) => setIsOpen(isOpen)} className="w-[35rem]">
@@ -81,4 +98,6 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 			</CommandDialog>
 		</>
 	)
-}
+})
+
+FoodCommand.displayName = "FoodCommand"
