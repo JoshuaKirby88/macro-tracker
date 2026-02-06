@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery } from "convex/react"
 import { PenIcon, PlusIcon, SearchIcon } from "lucide-react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import React, { useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import React, { useEffect, useMemo, useRef } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -25,21 +25,45 @@ const config = {
 	schema: createEntrySchema.omit({ entryDate: true }),
 }
 
+const everydayActionShortcuts = {
+	publicSearch: "u",
+	manageFoods: "f",
+	createFood: "n",
+} as const
+
+const shortcutLabel = (key: string) => `Ctrl+X ${key.toUpperCase()}`
+
+const isEditableElement = (target: EventTarget | null) => {
+	if (!(target instanceof HTMLElement)) return false
+	const tag = target.tagName
+	return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable
+}
+
+const KeyBadge = ({ label }: { label: string }) => (
+	<kbd
+		aria-hidden="true"
+		className="-bottom-1.5 -right-1.5 pointer-events-none absolute min-w-5 rounded border border-border bg-background/95 px-1 font-semibold text-[10px] text-muted-foreground uppercase shadow-sm dark:bg-background/75"
+	>
+		{label.toUpperCase()}
+	</kbd>
+)
+
 export const FoodAdder = () => {
 	const searchParams = useSearchParams()
+	const router = useRouter()
 	const selectedDate = useDateString("selected")
 	const createEntry = useMutation(api.entries.create)
 	const createFood = useMutation(api.foods.create)
 	const entriesWithFoods = useQuery(api.entries.withFoodsForDate, { date: selectedDate })
 	const foods = useQuery(api.foods.forUser)
 	const [isPublicSearchOpen, setIsPublicSearchOpen] = React.useState(false)
+	const leaderActiveRef = useRef(false)
+	const leaderTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	const form = useForm({ resolver: zodResolver(config.schema), defaultValues: { mealType: entryUtil.getMealType(new Date()), actualQuantity: 0 } })
 	const selectedFoodId = form.watch("foodId")
 
 	const selectedFood = foods?.find((f) => f._id === selectedFoodId)
-
-
 	const handlePublicFoodSelect = async (publicFood: PublicFood) => {
 		try {
 			const newFoodId = await createFood({
@@ -99,6 +123,50 @@ export const FoodAdder = () => {
 		}
 	}
 
+	const everydayActions = useMemo(
+		() => [
+			{ key: everydayActionShortcuts.publicSearch, action: () => setIsPublicSearchOpen(true) },
+			{ key: everydayActionShortcuts.manageFoods, action: () => router.push("/foods") },
+			{ key: everydayActionShortcuts.createFood, action: () => router.push("/create") },
+		],
+		[router],
+	)
+
+	useEffect(() => {
+		const actionMap = new Map(everydayActions.map((entry) => [entry.key, entry.action]))
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (isEditableElement(event.target)) return
+
+			if (event.ctrlKey && !event.metaKey && !event.altKey && event.key.toLowerCase() === "x") {
+				leaderActiveRef.current = true
+				if (leaderTimeoutRef.current) clearTimeout(leaderTimeoutRef.current)
+				leaderTimeoutRef.current = setTimeout(() => {
+					leaderActiveRef.current = false
+				}, 1500)
+				event.preventDefault()
+				return
+			}
+
+			if (!leaderActiveRef.current) return
+
+			const action = actionMap.get(event.key.toLowerCase())
+			if (action) {
+				action()
+				if (leaderTimeoutRef.current) clearTimeout(leaderTimeoutRef.current)
+				leaderActiveRef.current = false
+				event.preventDefault()
+			}
+		}
+
+		window.addEventListener("keydown", handleKeyDown)
+
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown)
+			if (leaderTimeoutRef.current) clearTimeout(leaderTimeoutRef.current)
+			leaderActiveRef.current = false
+		}
+	}, [everydayActions])
+
 	return (
 		<>
 			<Card className="-translate-x-1/2 fixed bottom-3 left-1/2 w-[30rem] max-w-[95%] flex-row p-4 shadow-2xl">
@@ -115,27 +183,42 @@ export const FoodAdder = () => {
 						</div>
 
 						<div className="flex gap-2">
-					<Button
-						variant="outline"
-						size="icon"
-						onClick={() => setIsPublicSearchOpen(true)}
-						onKeyDown={(e) => {
-							if (e.key === "Enter" || e.key === " ") {
-								e.preventDefault()
-								setIsPublicSearchOpen(true)
-							}
-						}}
-						title="Search USDA"
-					>
-						<SearchIcon />
-					</Button>
+							<Button
+								variant="outline"
+								size="icon"
+								onClick={() => setIsPublicSearchOpen(true)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										e.preventDefault()
+										setIsPublicSearchOpen(true)
+									}
+								}}
+								title={`Search USDA (${shortcutLabel(everydayActionShortcuts.publicSearch)})`}
+								aria-label={`Search USDA (${shortcutLabel(everydayActionShortcuts.publicSearch)})`}
+								className="relative"
+							>
+								<SearchIcon />
+								<KeyBadge label={everydayActionShortcuts.publicSearch} />
+							</Button>
 
-							<Link href="/foods" className={buttonVariants({ variant: "outline", size: "icon" })}>
+							<Link
+								href="/foods"
+								className={`${buttonVariants({ variant: "outline", size: "icon" })} relative`}
+								title={`Manage foods (${shortcutLabel(everydayActionShortcuts.manageFoods)})`}
+								aria-label={`Manage foods (${shortcutLabel(everydayActionShortcuts.manageFoods)})`}
+							>
 								<PenIcon />
+								<KeyBadge label={everydayActionShortcuts.manageFoods} />
 							</Link>
 
-							<Link href="/create" className={buttonVariants({ variant: "outline", size: "icon" })}>
+							<Link
+								href="/create"
+								className={`${buttonVariants({ variant: "outline", size: "icon" })} relative`}
+								title={`Create food (${shortcutLabel(everydayActionShortcuts.createFood)})`}
+								aria-label={`Create food (${shortcutLabel(everydayActionShortcuts.createFood)})`}
+							>
 								<PlusIcon />
+								<KeyBadge label={everydayActionShortcuts.createFood} />
 							</Link>
 						</div>
 					</div>

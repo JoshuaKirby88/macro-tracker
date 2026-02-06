@@ -81,7 +81,10 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 }
 
 export const FoodFormUploadImageButton = (props: React.ComponentProps<typeof Button>) => {
-	const actions = useContext(context)!
+	const actions = useContext(context)
+	if (!actions) {
+		throw new Error("FoodFormUploadImageButton must be used within FoodFormUploadImage")
+	}
 
 	return (
 		<Button variant="secondary" onClick={actions.openFileDialog} {...props}>

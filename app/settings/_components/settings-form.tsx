@@ -108,7 +108,7 @@ export const SettingsForm = () => {
 													return undefined
 												}
 												const num = Number(value)
-												return isNaN(num) ? undefined : num
+												return Number.isNaN(num) ? undefined : num
 											},
 										})}
 										id={`${mealType}-${macro}`}

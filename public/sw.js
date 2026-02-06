@@ -55,7 +55,7 @@ try {
 }
 
 const enableNavigationPreload = async () => {
-	if (self.registration && self.registration.navigationPreload) {
+	if (self.registration?.navigationPreload) {
 		try {
 			await self.registration.navigationPreload.enable()
 		} catch (_) {
@@ -187,7 +187,7 @@ if (self.workbox) {
 	// Minimal fallback SW without Workbox
 	const RUNTIME = `${CACHE_PREFIX}-${VERSION}-runtime`
 
-	self.addEventListener("install", (event) => {
+	self.addEventListener("install", (_event) => {
 		self.skipWaiting()
 	})
 
@@ -196,7 +196,7 @@ if (self.workbox) {
 			(async () => {
 				const keys = await caches.keys()
 				await Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && !k.endsWith(VERSION)).map((k) => caches.delete(k)))
-				if (self.clients && self.clients.claim) await self.clients.claim()
+				if (self.clients?.claim) await self.clients.claim()
 				await enableNavigationPreload()
 			})(),
 		)

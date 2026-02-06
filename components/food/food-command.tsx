@@ -52,7 +52,9 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 					value={inputValue}
 					onValueChange={(v) => {
 						setInputValue(v)
-						listRef.current!.scrollTop = 0
+						if (listRef.current) {
+							listRef.current.scrollTop = 0
+						}
 					}}
 				/>
 				<CommandList ref={listRef}>

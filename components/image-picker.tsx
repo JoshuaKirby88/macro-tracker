@@ -27,7 +27,7 @@ export const ImagePicker = (props: { value: string; onChange: (value: string) =>
 			setQuery(defaultQuery)
 			setDebouncedQuery(defaultQuery)
 		}
-	}, [isOpen])
+	}, [isOpen, props.getDefaultQueryOnOpen])
 
 	const { data, isFetching, isError } = useQuery({
 		queryKey: ["image-search", debouncedQuery],

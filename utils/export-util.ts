@@ -36,8 +36,8 @@ export const exportUtil = {
 		const sortedDates = Array.from(entriesByDate.keys()).sort()
 
 		let markdown = "# Food Export\n\n"
-		const startDateFormatted = format(new Date(sortedDates[0] + "T00:00:00"), "MMMM d, yyyy")
-		const endDateFormatted = format(new Date(sortedDates[sortedDates.length - 1] + "T00:00:00"), "MMMM d, yyyy")
+		const startDateFormatted = format(new Date(`${sortedDates[0]}T00:00:00`), "MMMM d, yyyy")
+		const endDateFormatted = format(new Date(`${sortedDates[sortedDates.length - 1]}T00:00:00`), "MMMM d, yyyy")
 		if (sortedDates.length === 1 || sortedDates[0] === sortedDates[sortedDates.length - 1]) {
 			markdown += `**Date:** ${startDateFormatted}\n\n`
 		} else {
@@ -49,8 +49,9 @@ export const exportUtil = {
 
 		// Generate content for each date
 		for (const date of sortedDates) {
-			const dateEntries = entriesByDate.get(date)!
-			const formattedDate = format(new Date(date + "T00:00:00"), "EEEE, MMMM d, yyyy")
+			const dateEntries = entriesByDate.get(date)
+			if (!dateEntries) continue
+			const formattedDate = format(new Date(`${date}T00:00:00`), "EEEE, MMMM d, yyyy")
 
 			markdown += `## ${formattedDate}\n\n`
 

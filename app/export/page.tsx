@@ -87,7 +87,7 @@ export default function ExportPage() {
 		try {
 			await navigator.clipboard.writeText(markdown)
 			toast.success("Markdown copied to clipboard")
-		} catch (error) {
+		} catch (_error) {
 			toast.error("Failed to copy to clipboard")
 		}
 	}
