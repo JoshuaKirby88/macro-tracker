@@ -30,10 +30,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "Onigiri",
 	description: "Onigiri - AI Macro Tracker",
-	themeColor: [
-		{ media: "(prefers-color-scheme: dark)", color: "#111111" },
-		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
-	],
 	appleWebApp: {
 		capable: true,
 		statusBarStyle: "black",
@@ -47,6 +43,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
 	viewportFit: "cover",
+	themeColor: [
+		{ media: "(prefers-color-scheme: dark)", color: "#111111" },
+		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
+	],
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -57,8 +57,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 					<meta name="apple-mobile-web-app-capable" content="yes" />
 					<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 					<meta name="mobile-web-app-capable" content="yes" />
-					<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#111111" />
-					<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
 				</head>
 
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
