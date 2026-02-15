@@ -12,6 +12,7 @@ import { GLOBALS } from "@/utils/globals"
 import { KeyboardShortcuts } from "./_components/layout/keyboard-shortcuts"
 import { AuthButtons } from "./_components/layout/navbar/auth-buttons"
 import { ConvexProvider } from "./_components/layout/providers/convex-provider"
+import { HotkeysProviderWrapper } from "./_components/layout/providers/hotkeys-provider"
 import { ReactQueryProvider } from "./_components/layout/providers/react-query-provider"
 import { ThemeProvider } from "./_components/layout/providers/theme-provider"
 import { ThemeDropdown } from "./_components/layout/theme-dropdown"
@@ -62,35 +63,37 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<ThemeProvider>
-						<KeyboardShortcuts />
-						<ReactQueryProvider>
-							<ConvexProvider>
-								<header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-background p-4">
-									<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
-										<Image src={GLOBALS.thiings("/onigiri")} alt="Macro Tracker" width={34} height={34} priority />
-										<span className={cn("text-muted-foreground text-xl transition-all hover:text-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
-									</Link>
+						<HotkeysProviderWrapper>
+							<KeyboardShortcuts />
+							<ReactQueryProvider>
+								<ConvexProvider>
+									<header className="sticky top-0 z-10 flex h-16 items-center justify-between bg-background p-4">
+										<Link href="/" aria-label="Home" className="inline-flex items-center gap-1">
+											<Image src={GLOBALS.thiings("/onigiri")} alt="Macro Tracker" width={34} height={34} priority />
+											<span className={cn("text-muted-foreground text-xl transition-all hover:text-foreground", SFProRoundedSemibold.className)}>Onigiri</span>
+										</Link>
 
-									<div className="flex items-center gap-4">
-										<ThemeDropdown />
+										<div className="flex items-center gap-4">
+											<ThemeDropdown />
 
-										<AuthButtons />
-									</div>
-								</header>
+											<AuthButtons />
+										</div>
+									</header>
 
-								{children}
+									{children}
 
-								<Toaster position="top-right" />
+									<Toaster position="top-right" />
 
-								<Script id="sw-register" strategy="afterInteractive">
-									{`if ('serviceWorker' in navigator) {
-										window.addEventListener('load', () => {
-											navigator.serviceWorker.register('/sw.js').catch(() => {})
-										})
-									}`}
-								</Script>
-							</ConvexProvider>
-						</ReactQueryProvider>
+									<Script id="sw-register" strategy="afterInteractive">
+										{`if ('serviceWorker' in navigator) {
+											window.addEventListener('load', () => {
+												navigator.serviceWorker.register('/sw.js').catch(() => {})
+											})
+										}`}
+									</Script>
+								</ConvexProvider>
+							</ReactQueryProvider>
+						</HotkeysProviderWrapper>
 					</ThemeProvider>
 				</body>
 			</html>

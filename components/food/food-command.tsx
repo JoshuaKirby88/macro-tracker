@@ -1,3 +1,4 @@
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys"
 import { useQuery } from "convex/react"
 import { SearchIcon } from "lucide-react"
 import Image from "next/image"
@@ -7,6 +8,7 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 import { api } from "@/convex/_generated/api"
 import type { Food } from "@/convex/schema"
 import { GLOBALS } from "@/utils/globals"
+import { shortcuts } from "@/utils/shortcuts-config"
 
 export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Food["_id"]) => void; onSelect?: () => void }) => {
 	const foods = useQuery(api.foods.forUser, {})
@@ -16,17 +18,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 	const sortedFoods = React.useMemo(() => (foods ? [...foods].sort((a, b) => b.touchedAt - a.touchedAt) : []), [foods])
 	const listRef = React.useRef<HTMLDivElement | null>(null)
 
-	React.useEffect(() => {
-		const down = (e: KeyboardEvent) => {
-			if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-				e.preventDefault()
-				setIsOpen((open) => !open)
-			}
-		}
-
-		document.addEventListener("keydown", down)
-		return () => document.removeEventListener("keydown", down)
-	}, [])
+	useHotkey(shortcuts.command.togglePalette.key, () => setIsOpen((open) => !open), { preventDefault: true })
 
 	return (
 		<>
@@ -40,7 +32,7 @@ export const FoodCommand = (props: { foodId: Food["_id"]; onChange: (foodId: Foo
 					<span className="flex w-full items-center gap-2 text-muted-foreground">
 						<SearchIcon />
 						Search foods...
-						<kbd className="ml-auto hidden items-center rounded border px-1 font-[inherit] text-xs md:flex">⌘K</kbd>
+						<kbd className="ml-auto hidden items-center rounded border px-1 font-[inherit] text-xs md:flex">{formatForDisplay(shortcuts.command.togglePalette.key)}</kbd>
 					</span>
 				)}
 			</Button>

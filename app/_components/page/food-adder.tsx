@@ -1,11 +1,12 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useHotkeySequence } from "@tanstack/react-hotkeys"
 import { useMutation, useQuery } from "convex/react"
 import { PenIcon, PlusIcon, SearchIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useCallback, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import type z from "zod/v3"
@@ -21,23 +22,11 @@ import { createEntrySchema, type Food } from "@/convex/schema"
 import { useDateString } from "@/utils/date-util"
 import { entryUtil } from "@/utils/entry-util"
 import { toastFormError } from "@/utils/form/toast-form-error"
-import { getShortcutLabel, useLeaderShortcut } from "@/utils/shortcuts"
+import { getKeyLabel, getSequenceLabel, shortcuts } from "@/utils/shortcuts-config"
 
 const config = {
 	schema: createEntrySchema.omit({ entryDate: true }),
 }
-
-const everydayActionShortcuts = {
-	publicSearch: "u",
-	manageFoods: "f",
-	createFood: "n",
-} as const
-
-const mealShortcutKeys = {
-	breakfast: "b",
-	lunch: "l",
-	dinner: "d",
-} as const
 
 export const FoodAdder = () => {
 	const searchParams = useSearchParams()
@@ -121,23 +110,14 @@ export const FoodAdder = () => {
 
 	const focusQuantity = useCallback(() => form.setFocus("actualQuantity"), [form])
 
-	const mealShortcuts = useMemo(
-		() =>
-			entryUtil.mealTypes.map((mealType) => ({
-				key: mealShortcutKeys[mealType as keyof typeof mealShortcutKeys],
-				handler: () => form.setValue("mealType", mealType),
-			})),
-		[form],
-	)
-
-	useLeaderShortcut([
-		{ key: everydayActionShortcuts.publicSearch, handler: () => setIsPublicSearchOpen(true) },
-		{ key: everydayActionShortcuts.manageFoods, handler: () => router.push("/foods") },
-		{ key: everydayActionShortcuts.createFood, handler: () => router.push("/create") },
-		{ key: "q", handler: focusQuantity, enabled: Boolean(selectedFoodId) },
-		{ key: "r", handler: submitCurrentForm, enabled: Boolean(selectedFoodId) },
-		...mealShortcuts,
-	])
+	useHotkeySequence([...shortcuts.food.publicSearch.sequence], () => setIsPublicSearchOpen(true))
+	useHotkeySequence([...shortcuts.food.manageFoods.sequence], () => router.push("/foods"))
+	useHotkeySequence([...shortcuts.food.createFood.sequence], () => router.push("/create"))
+	useHotkeySequence([...shortcuts.food.focusQuantity.sequence], focusQuantity, { enabled: Boolean(selectedFoodId) })
+	useHotkeySequence([...shortcuts.food.submit.sequence], submitCurrentForm, { enabled: Boolean(selectedFoodId) })
+	useHotkeySequence([...shortcuts.food.breakfast.sequence], () => form.setValue("mealType", "breakfast"))
+	useHotkeySequence([...shortcuts.food.lunch.sequence], () => form.setValue("mealType", "lunch"))
+	useHotkeySequence([...shortcuts.food.dinner.sequence], () => form.setValue("mealType", "dinner"))
 
 	return (
 		<>
@@ -165,32 +145,32 @@ export const FoodAdder = () => {
 										setIsPublicSearchOpen(true)
 									}
 								}}
-								title={`Search USDA (${getShortcutLabel(everydayActionShortcuts.publicSearch)})`}
-								aria-label={`Search USDA (${getShortcutLabel(everydayActionShortcuts.publicSearch)})`}
+								title={`Search USDA (${getSequenceLabel(shortcuts.food.publicSearch.sequence)})`}
+								aria-label={`Search USDA (${getSequenceLabel(shortcuts.food.publicSearch.sequence)})`}
 								className="relative"
 							>
 								<SearchIcon />
-								<KeyBadge label={everydayActionShortcuts.publicSearch} />
+								<KeyBadge label={getKeyLabel(shortcuts.food.publicSearch.sequence[1])} />
 							</Button>
 
 							<Link
 								href="/foods"
 								className={`${buttonVariants({ variant: "outline", size: "icon" })} relative`}
-								title={`Manage foods (${getShortcutLabel(everydayActionShortcuts.manageFoods)})`}
-								aria-label={`Manage foods (${getShortcutLabel(everydayActionShortcuts.manageFoods)})`}
+								title={`Manage foods (${getSequenceLabel(shortcuts.food.manageFoods.sequence)})`}
+								aria-label={`Manage foods (${getSequenceLabel(shortcuts.food.manageFoods.sequence)})`}
 							>
 								<PenIcon />
-								<KeyBadge label={everydayActionShortcuts.manageFoods} />
+								<KeyBadge label={getKeyLabel(shortcuts.food.manageFoods.sequence[1])} />
 							</Link>
 
 							<Link
 								href="/create"
 								className={`${buttonVariants({ variant: "outline", size: "icon" })} relative`}
-								title={`Create food (${getShortcutLabel(everydayActionShortcuts.createFood)})`}
-								aria-label={`Create food (${getShortcutLabel(everydayActionShortcuts.createFood)})`}
+								title={`Create food (${getSequenceLabel(shortcuts.food.createFood.sequence)})`}
+								aria-label={`Create food (${getSequenceLabel(shortcuts.food.createFood.sequence)})`}
 							>
 								<PlusIcon />
-								<KeyBadge label={everydayActionShortcuts.createFood} />
+								<KeyBadge label={getKeyLabel(shortcuts.food.createFood.sequence[1])} />
 							</Link>
 						</div>
 					</div>
@@ -200,7 +180,7 @@ export const FoodAdder = () => {
 							<span className="text-muted-foreground text-sm">{selectedFood ? `Quantity (${selectedFood.servingUnit})` : "Quantity"}</span>
 							<div className="relative">
 								<FormNumberInput form={form} value="actualQuantity" />
-								<KeyBadge label="q" />
+								<KeyBadge label={getKeyLabel(shortcuts.food.focusQuantity.sequence[1])} />
 							</div>
 						</div>
 
@@ -213,7 +193,7 @@ export const FoodAdder = () => {
 									<Select value={field.value} onValueChange={field.onChange}>
 										<SelectTrigger className="relative w-full capitalize">
 											<SelectValue />
-											<KeyBadge label={mealShortcutKeys[field.value as keyof typeof mealShortcutKeys] ?? "b"} />
+											<KeyBadge label={getKeyLabel(shortcuts.food[field.value as "breakfast" | "lunch" | "dinner"].sequence[1])} />
 										</SelectTrigger>
 										<SelectContent>
 											{entryUtil.mealTypes.map((mealType) => (
@@ -229,7 +209,7 @@ export const FoodAdder = () => {
 
 						<Button type="submit" isLoading={form.formState.isSubmitting} className="relative">
 							{form.formState.isSubmitting ? "Tracking…" : "Track"}
-							<KeyBadge label="r" />
+							<KeyBadge label={getKeyLabel(shortcuts.food.submit.sequence[1])} />
 						</Button>
 					</div>
 				</form>
