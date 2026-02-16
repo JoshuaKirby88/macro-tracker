@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
+		"dev": "next dev --webpack",
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome check",
@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"@ai-sdk/openai": "^2.0.30",
-		"@clerk/nextjs": "^6.32.0",
+		"@clerk/nextjs": "^6.37.4",
 		"@hookform/resolvers": "^5.2.2",
 		"@opennextjs/cloudflare": "^1.8.3",
 		"@radix-ui/react-slot": "^1.2.3",
@@ -68,9 +68,9 @@
 		"wrangler": "^4.49.0"
 	},
 	"pnpm": {
-		"neverBuiltDependencies": [],
-		"overrides": {
-			"react-is": "^19.0.0-rc-69d4b800-20241021"
-		}
+		"neverBuiltDependencies": []
+	},
+	"overrides": {
+		"react-is": "^19.0.0-rc-69d4b800-20241021"
 	}
 }

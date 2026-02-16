@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs"
-import { z } from "zod"
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
 	server: {
@@ -7,6 +7,7 @@ export const env = createEnv({
 		CLERK_FRONTEND_API_URL: z.string(),
 		CONVEX_DEPLOYMENT: z.string(),
 		OPENAI_API_KEY: z.string(),
+		OPENAI_BASE_URL: z.string(),
 	},
 	client: {
 		NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
@@ -18,8 +19,9 @@ export const env = createEnv({
 		CLERK_FRONTEND_API_URL: process.env.CLERK_FRONTEND_API_URL,
 		CONVEX_DEPLOYMENT: process.env.CONVEX_DEPLOYMENT,
 		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+		OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
 		NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
 		NEXT_PUBLIC_CLERK_SIGN_IN_URL: process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL,
 		NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
 	},
-})
+});

@@ -1,6 +1,6 @@
 "use server"
 
-import { openai } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai"
 import { createFoodSchema } from "@/convex/schema"
 import { ai } from "@/utils/ai"
 
@@ -19,8 +19,12 @@ export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) 
 		throw new Error("No supported images found. Please upload JPEG, PNG, WEBP, or GIF.")
 	}
 
+	const openai = createOpenAI({
+		baseURL: process.env.OPENAI_BASE_URL,
+	})
+
 	const { object } = await ai.getObject({
-		model: openai("gpt-5-nano"),
+		model: openai("google/gemini-2.5-flash-lite"),
 		schema: createFoodSchema.partial(),
 		messages: [
 			{
