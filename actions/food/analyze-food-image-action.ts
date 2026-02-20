@@ -16,23 +16,18 @@ const extractionSchema = createFoodSchema.partial().extend({
 	imageQuery: z.string().optional(),
 })
 
-const isPresentFieldValue = (value: unknown) => {
-	if (value === null || value === undefined) return false
-	if (typeof value === "string") return value.trim().length > 0
-	if (typeof value === "number") return Number.isFinite(value)
-	return true
-}
+export const analyzeFoodImageAction = async (input: { imageBase64: string }) => {
+	const isValidImage = (() => {
+		if (!input.imageBase64) return false
+		if (/^https?:\/\//i.test(input.imageBase64)) return true
+		return isSupportedImageDataUrl(input.imageBase64)
+	})()
 
-export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) => {
-	const validImages = (input.imageBase64s ?? []).filter((s) => {
-		if (!s) return false
-		if (/^https?:\/\//i.test(s)) return true
-		return isSupportedImageDataUrl(s)
-	})
-
-	if (validImages.length === 0) {
-		throw new Error(`No supported images found. ${IMAGE_UPLOAD.supportedMimeTypeError}`)
+	if (!isValidImage) {
+		throw new Error(`No supported image found. ${IMAGE_UPLOAD.supportedMimeTypeError}`)
 	}
+
+	const validImages = [input.imageBase64]
 
 	const openai = createOpenAI({
 		baseURL: process.env.OPENAI_BASE_URL,
@@ -41,36 +36,49 @@ export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) 
 	const { object } = await ai.getObject({
 		model: openai("google/gemini-3-flash-preview"),
 		schema: extractionSchema,
+		maxOutputTokens: 1000,
 		messages: [
 			{
-				role: "user",
+				role: "system",
 				content: [
-					{
-						type: "text",
-						text: [
-							"You are extracting structured nutrition information from an image of food packaging or a nutrition label.",
-							"- Output ONLY fields you can clearly read from the image.",
-							"- Do NOT infer or guess missing values.",
-							"- Use numbers for all numeric values.",
-							"- Units:",
-							"  • calories: Cal",
-							"  • protein/fat/carbs/fiber/sugar: grams (g)",
-							"- If serving size is present, include both servingSize (number) and servingUnit (string), e.g. 1 and 'cup', or 30 and 'g'.",
-							"- Also return imageQuery as a short 1-2 word food search phrase using common food terms, not exact brand/product names.",
-						].join("\n"),
-					},
-					...validImages.map((image) => ({ type: "image" as const, image })),
-				],
+					"You are a precise nutrition label scanner.",
+					"- Extract ONLY values you can clearly read from the image.",
+					"- Do NOT infer or guess missing values.",
+					"- Return all numeric values as plain numbers (e.g., '10' not '10 Cal', '0.5' not '0.5g').",
+					"- Units: calories in Cal, protein/fat/carbs/fiber/sugar in grams (g).",
+					"- If serving size is present, return servingSize as number and servingUnit as string.",
+					"- If a value shows '<1g' or similar (less than), return 0.",
+					"- Also return imageQuery: a short 1-2 word food search phrase, common terms only, no brand names.",
+					"- Reasonable max values: calories up to 10000, macros up to 1000g.",
+				].join("\n"),
+			},
+			{
+				role: "user",
+				content: validImages.map((image) => ({ type: "image" as const, image })),
 			},
 		],
+		providerOptions: {
+			google: {
+				thinkingConfig: { thinkingLevel: "minimal" },
+			},
+		},
 	})
 
-	const rawImageQuery = typeof object.imageQuery === "string" ? object.imageQuery.trim() || undefined : undefined
-	const fields = Object.fromEntries(
-		Object.entries(object)
-			.filter(([key, value]) => key !== "imageQuery" && isPresentFieldValue(value))
-			.map(([key, value]) => [key, typeof value === "string" ? value.trim() : value]),
-	) as Partial<z.infer<typeof createFoodSchema>>
+	const rawImageQuery = object.imageQuery?.trim() || undefined
+
+	const parsedFields: Record<string, string | number | undefined> = {}
+	for (const [key, value] of Object.entries(object)) {
+		if (key === "imageQuery") continue
+		if (key === "name" || key === "brand" || key === "description" || key === "image" || key === "servingUnit") {
+			if (typeof value === "string" && value.trim()) {
+				parsedFields[key] = value.trim()
+			}
+		} else if (typeof value === "number" && Number.isFinite(value)) {
+			parsedFields[key] = value
+		}
+	}
+
+	const fields = parsedFields as Record<string, string | number>
 
 	if (rawImageQuery) {
 		const { fileNames } = await searchThiingsAction({
