@@ -16,18 +16,16 @@ const extractionSchema = createFoodSchema.partial().extend({
 	imageQuery: z.string().optional(),
 })
 
-export const analyzeFoodImageAction = async (input: { imageBase64: string }) => {
-	const isValidImage = (() => {
-		if (!input.imageBase64) return false
-		if (/^https?:\/\//i.test(input.imageBase64)) return true
-		return isSupportedImageDataUrl(input.imageBase64)
-	})()
+export const analyzeFoodImageAction = async (input: { imageBase64s: string[] }) => {
+	const validImages = (input.imageBase64s ?? []).filter((s) => {
+		if (!s) return false
+		if (/^https?:\/\//i.test(s)) return true
+		return isSupportedImageDataUrl(s)
+	})
 
-	if (!isValidImage) {
-		throw new Error(`No supported image found. ${IMAGE_UPLOAD.supportedMimeTypeError}`)
+	if (validImages.length === 0) {
+		throw new Error(`No supported images found. ${IMAGE_UPLOAD.supportedMimeTypeError}`)
 	}
-
-	const validImages = [input.imageBase64]
 
 	const openai = createOpenAI({
 		baseURL: process.env.OPENAI_BASE_URL,

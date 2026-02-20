@@ -13,7 +13,6 @@ import { type FileUploadActions, useFileUpload } from "@/hooks/use-file-upload"
 import { IMAGE_UPLOAD, isSupportedImageFile, resizeAndConvertToDataUrl } from "@/utils/food/image-upload"
 
 const context = createContext<FileUploadActions | null>(null)
-const fieldKeys = ["name", "image", "brand", "description", "servingSize", "servingUnit", "calories", "protein", "fat", "carbs", "sugar", "fiber"] as const
 
 export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof updateFoodSchema>> } & React.ComponentProps<"div">) => {
 	const [state, actions] = useFileUpload({
@@ -41,34 +40,29 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 					return
 				}
 
-				const analysisPromises = base64s.map((base64) => analyzeFoodImageAction({ imageBase64: base64 }))
-				const analysisResults = await Promise.allSettled(analysisPromises)
+				const result = await analyzeFoodImageAction({ imageBase64s: base64s })
 
-				const mergedFields: Partial<z.infer<typeof updateFoodSchema>> = {}
-				let successfulCount = 0
+				if (!result.fields) {
+					toast.error("No nutrition data detected", { id: toastId })
+					return
+				}
 
-				for (const result of analysisResults) {
-					if (result.status !== "fulfilled") continue
-					successfulCount++
-					for (const key of fieldKeys) {
-						if (result.value.fields[key] !== undefined && mergedFields[key] === undefined) {
-							mergedFields[key] = result.value.fields[key] as never
-						}
+				const entries = Object.entries(result.fields)
+				if (entries.length === 0) {
+					toast.error("No nutrition data extracted", { id: toastId })
+					return
+				}
+
+				for (const [key, value] of entries) {
+					if (value !== undefined) {
+						props.form.setValue(key as any, value)
 					}
 				}
 
-				const entries = Object.entries(mergedFields)
-				if (entries.length === 0) {
-					toast.error("No nutrition data detected from images", { id: toastId })
-					return
-				}
-				for (const [k, v] of entries) {
-					props.form.setValue(k as (typeof fieldKeys)[number], v as never)
-				}
-				toast.success(`Extracted nutrition from ${successfulCount} image${successfulCount > 1 ? "s" : ""}`, { id: toastId })
+				toast.success("Nutrition extracted from image(s)", { id: toastId })
 			} catch (e) {
 				const msg = e instanceof Error ? e.message : "Image analysis failed"
-				toast.error(msg, { id: toastId })
+				toast.error(msg)
 			} finally {
 				actions.clearFiles()
 			}
