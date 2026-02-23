@@ -10,7 +10,7 @@ import { FullscreenDropOverlay } from "@/components/food/food-form/fullscreen-dr
 import { Button } from "@/components/shadcn/button"
 import type { updateFoodSchema } from "@/convex/schema"
 import { type FileUploadActions, useFileUpload } from "@/hooks/use-file-upload"
-import { IMAGE_UPLOAD, isSupportedImageFile, resizeAndConvertToDataUrl } from "@/utils/food/image-upload"
+import { IMAGE_UPLOAD, isSupportedImageFile, resizeForAnalysis } from "@/utils/food/image-upload"
 
 const context = createContext<FileUploadActions | null>(null)
 
@@ -31,7 +31,7 @@ export const FoodFormUploadImage = (props: { form: UseFormReturn<z.infer<typeof 
 				}
 				if (supportedFiles.length === 0) return
 
-				const base64Promises = supportedFiles.map((file) => resizeAndConvertToDataUrl(file))
+				const base64Promises = supportedFiles.map((file) => resizeForAnalysis(file))
 				const base64Results = await Promise.allSettled(base64Promises)
 				const base64s = base64Results.filter((r): r is PromiseFulfilledResult<string> => r.status === "fulfilled").map((r) => r.value)
 

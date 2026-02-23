@@ -31,16 +31,14 @@ const getOutputType = (mimeType: string): string => {
 	return "image/jpeg"
 }
 
-export const resizeAndConvertToDataUrl = (file: File) =>
-	new Promise<string>((resolve, reject) => {
-		if (file.size <= IMAGE_UPLOAD.maxFileSize) {
-			toDataUrl(file).then(resolve, reject)
-			return
-		}
+const ANALYSIS_MAX_DIMENSION = 1024
+const ANALYSIS_JPEG_QUALITY = 0.75
 
+export const resizeForAnalysis = (file: File) =>
+	new Promise<string>((resolve, reject) => {
 		const img = new Image()
 		img.onload = () => {
-			const maxDim = IMAGE_UPLOAD.maxDimension
+			const maxDim = ANALYSIS_MAX_DIMENSION
 			let width = img.width
 			let height = img.height
 
@@ -65,7 +63,7 @@ export const resizeAndConvertToDataUrl = (file: File) =>
 			ctx.drawImage(img, 0, 0, width, height)
 
 			const outputType = getOutputType(file.type)
-			const quality = outputType === "image/jpeg" ? 0.9 : undefined
+			const quality = outputType === "image/jpeg" ? ANALYSIS_JPEG_QUALITY : undefined
 			const dataUrl = canvas.toDataURL(outputType, quality)
 			resolve(dataUrl)
 		}
